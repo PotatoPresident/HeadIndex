@@ -1,0 +1,18 @@
+{
+  "text.headindex.category.alphabet": "Alphabet",
+  "text.headindex.category.animals": "Animals",
+  "text.headindex.category.blocks": "Blocks",
+  "text.headindex.category.decoration": "Decoration",
+  "text.headindex.category.food-drinks": "Food & Drinks",
+  "text.headindex.category.humans": "Humans",
+  "text.headindex.category.humanoid": "Humanoid",
+  "text.headindex.category.miscellaneous": "Miscellaneous",
+  "text.headindex.category.monsters": "Monsters",
+  "text.headindex.category.plants": "Plants",
+
+  "text.headindex.title": "Head Index",
+  "text.headindex.back": "Back",
+  "text.headindex.search": "Search",
+  "text.headindex.search.output": "Search: %s",
+  "text.headindex.playername": "Playername"
+}
