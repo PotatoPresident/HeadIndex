@@ -3,9 +3,11 @@ package us.potatoboy.headindex.gui;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -43,25 +45,59 @@ public class HeadGui extends SimpleGui {
 
         this.setTitle(new TranslatableText("text.headindex.title"));
 
-        this.setSlot(this.getSize() - 1, new GuiElementBuilder()
-                .setItem(Items.NAME_TAG)
-                .setName(new TranslatableText("text.headindex.search"))
-                .setCallback((index1, type1, action) -> {
-                    new SearchInputGui().open();
-                }));
+        if (Permissions.check(player, "headindex.search", 2)) {
+            this.setSlot(this.getSize() - 1, new GuiElementBuilder()
+                    .setItem(Items.NAME_TAG)
+                    .setName(new TranslatableText("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
+                    .setCallback((index1, type1, action) -> {
+                        this.close();
+                        new SearchInputGui().open();
+                    }));
+        }
 
-        this.setSlot(this.getSize() - 2, new GuiElementBuilder()
-                .setItem(Items.PLAYER_HEAD)
-                .setName(new TranslatableText("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE)))
-                .setCallback((index1, type1, action) -> {
-                    new PlayerInputGui().open();
-                }));
+        if (Permissions.check(player, "headindex.playername", 2)) {
+            this.setSlot(this.getSize() - 2, new GuiElementBuilder()
+                    .setItem(Items.PLAYER_HEAD)
+                    .setName(new TranslatableText("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE)))
+                    .setCallback((index1, type1, action) -> {
+                        this.close();
+                        new PlayerInputGui().open();
+                    }));
+        }
     }
 
     private void addCategoryButton(int index, Head.Category category) {
         this.setSlot(index, category.createStack(), (index1, type1, action) -> {
+            this.close();
             new CategoryGui(category).open();
         });
+    }
+
+    private void processHeadClick(Head head, ClickType type) {
+        ItemStack cursorStack = player.inventory.getCursorStack();
+        ItemStack headStack = head.createStack();
+
+        if (cursorStack.isEmpty()) {
+            if (type.shift) {
+                player.inventory.insertStack(headStack);
+            } else if (type.isMiddle) {
+                headStack.setCount(headStack.getMaxCount());
+                player.inventory.setCursorStack(headStack);
+            } else {
+                player.inventory.setCursorStack(headStack);
+            }
+        } else if (headStack.isItemEqualIgnoreDamage(cursorStack) && ItemStack.areTagsEqual(headStack, cursorStack)) {
+            if (type.isLeft) {
+                cursorStack.increment(1);
+            } else if (type.isRight) {
+                cursorStack.decrement(1);
+            } else if (type.isMiddle) {
+                headStack.setCount(headStack.getMaxCount());
+                player.inventory.setCursorStack(headStack);
+            }
+        } else {
+            player.inventory.setCursorStack(ItemStack.EMPTY);
+        }
     }
 
     private class CategoryGui extends PagedGui {
@@ -88,7 +124,7 @@ public class HeadGui extends SimpleGui {
 
         @Override
         int getMaxPage() {
-            return (int) Math.ceil((double) this.heads.size() / 45);
+            return Math.max(1, (int) Math.ceil((double) this.heads.size() / 45));
         }
 
         @Override
@@ -96,21 +132,21 @@ public class HeadGui extends SimpleGui {
             for (int i = 0; i < 45; i++) {
                 if (heads.size() > i + (this.page * 45)) {
                     Head head = heads.get(i + (this.page * 45));
-                    this.setSlot(i, head.createStack(), (index, type1, action) -> {
-                        player.inventory.setCursorStack(head.createStack());
-                    });
+                    this.setSlot(i, head.createStack(), (index, type, action) -> processHeadClick(head, type));
+                } else {
+                    this.setSlot(i, Items.AIR.getDefaultStack());
                 }
             }
         }
 
         @Override
         public void onClose() {
-            this.close(false);
             HeadGui.this.open();
         }
     }
 
     public void openSearch(String search) {
+        this.close();
         new SearchGui(search).open();
     }
 
@@ -129,7 +165,7 @@ public class HeadGui extends SimpleGui {
             this.setSlot(this.size - 9, new GuiElementBuilder(Items.BARRIER)
                     .setName(new TranslatableText("text.headindex.back"))
                     .setCallback((index, type1, action) -> {
-                        HeadGui.this.open();
+                        this.close();
                     })
             );
 
@@ -138,7 +174,7 @@ public class HeadGui extends SimpleGui {
 
         @Override
         int getMaxPage() {
-            return (int) Math.ceil((double) this.heads.size() / 45);
+            return Math.max(1, (int) Math.ceil((double) this.heads.size() / 45));
         }
 
         @Override
@@ -146,9 +182,7 @@ public class HeadGui extends SimpleGui {
             for (int i = 0; i < 45; i++) {
                 if (heads.size() > i + (this.page * 45)) {
                     Head head = heads.get(i + (this.page * 45));
-                    this.setSlot(i, head.createStack(), (index, type1, action) -> {
-                        player.inventory.setCursorStack(head.createStack());
-                    });
+                    this.setSlot(i, head.createStack(), (index, type, action) -> processHeadClick(head, type));
                 } else {
                     this.setSlot(i, Items.AIR.getDefaultStack());
                 }
@@ -207,8 +241,6 @@ public class HeadGui extends SimpleGui {
             super(HeadGui.this.player, false);
 
             inputStack.setCustomName(new TranslatableText("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false)));
-            //CompoundTag ownerTag = outputStack.getOrCreateSubTag("SkullOwner");
-            //ownerTag.putString("Name", "");
 
             this.setSlot(1, inputStack);
 
@@ -230,27 +262,34 @@ public class HeadGui extends SimpleGui {
                     GameProfile profile = server.getUserCache().findByName(this.getInput());
                     MinecraftSessionService sessionService = server.getSessionService();
 
+                    if (profile == null) {
+                        outputStack.removeSubTag("SkullOwner");
+                        return;
+                    }
+
                     profile = sessionService.fillProfileProperties(profile, true);
                     Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, true);
-                    if (!textures.isEmpty()) {
-                        MinecraftProfileTexture texture = textures.get(MinecraftProfileTexture.Type.SKIN);
 
-                        CompoundTag ownerTag = outputStack.getOrCreateSubTag("SkullOwner");
-                        ownerTag.putUuid("Id", profile.getId());
-                        ownerTag.putString("Name", profile.getName());
-
-                        CompoundTag propertiesTag = new CompoundTag();
-                        ListTag texturesTag = new ListTag();
-                        CompoundTag textureValue = new CompoundTag();
-
-                        textureValue.putString("Value", new String(Base64.encodeBase64(String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", texture.getUrl()).getBytes()), StandardCharsets.UTF_8));
-
-                        texturesTag.add(textureValue);
-                        propertiesTag.put("textures", texturesTag);
-                        ownerTag.put("Properties", propertiesTag);
-                    } else {
+                    if (textures.isEmpty()) {
                         outputStack.removeSubTag("SkullOwner");
+                        return;
                     }
+
+                    MinecraftProfileTexture texture = textures.get(MinecraftProfileTexture.Type.SKIN);
+
+                    CompoundTag ownerTag = outputStack.getOrCreateSubTag("SkullOwner");
+                    ownerTag.putUuid("Id", profile.getId());
+                    ownerTag.putString("Name", profile.getName());
+
+                    CompoundTag propertiesTag = new CompoundTag();
+                    ListTag texturesTag = new ListTag();
+                    CompoundTag textureValue = new CompoundTag();
+
+                    textureValue.putString("Value", new String(Base64.encodeBase64(String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", texture.getUrl()).getBytes()), StandardCharsets.UTF_8));
+
+                    texturesTag.add(textureValue);
+                    propertiesTag.put("textures", texturesTag);
+                    ownerTag.put("Properties", propertiesTag);
 
                     this.setSlot(2, outputStack, (index, type1, action) -> {
                         player.inventory.setCursorStack(outputStack.copy());

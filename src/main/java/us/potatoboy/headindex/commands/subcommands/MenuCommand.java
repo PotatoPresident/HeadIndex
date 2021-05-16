@@ -3,6 +3,7 @@ package us.potatoboy.headindex.commands.subcommands;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import us.potatoboy.headindex.BuildableCommand;
@@ -12,6 +13,7 @@ public class MenuCommand implements BuildableCommand {
     @Override
     public LiteralCommandNode<ServerCommandSource> build() {
         return CommandManager.literal("menu")
+                .requires(Permissions.require("headindex.menu", 2))
                 .executes(MenuCommand::openMenu)
                 .build();
     }
