@@ -2,13 +2,15 @@
   "schemaVersion": 1,
   "id": "headindex",
   "version": "${version}",
-  "name": "Headindex",
+  "name": "Head Index",
   "description": "Adds a serverside head index",
   "authors": [
     "Potatoboy9999"
   ],
   "contact": {
-    "repo": "a"
+    "repo": "https://github.com/PotatoPresident/HeadIndex",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/head-index",
+    "issues": "https://github.com/PotatoPresident/HeadIndex/issues"
   },
   "license": "MIT",
   "icon": "assets/headindex/icon.png",
@@ -18,12 +20,9 @@
       "us.potatoboy.headindex.HeadIndex"
     ]
   },
-  "mixins": [
-    "headindex.mixins.json"
-  ],
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "1.16.5"
+    "minecraft": ">=1.16.5"
   }
 }
