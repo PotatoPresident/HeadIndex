@@ -11,7 +11,7 @@ import us.potatoboy.headindex.HeadIndex;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java          .net.URLConnection;
+import java.net.URLConnection;
 
 public class HeadDatabaseAPI {
     private final String apiUrl = "https://minecraft-heads.com/scripts/api.php?cat=%s&tags=true";
