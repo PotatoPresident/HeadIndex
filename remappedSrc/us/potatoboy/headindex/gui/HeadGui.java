@@ -74,17 +74,17 @@ public class HeadGui extends SimpleGui {
     }
 
     private void processHeadClick(Head head, ClickType type) {
-        ItemStack cursorStack = player.currentScreenHandler.getCursorStack();
+        ItemStack cursorStack = player.inventory.getCursorStack();
         ItemStack headStack = head.createStack();
 
         if (cursorStack.isEmpty()) {
             if (type.shift) {
-                player.getInventory().insertStack(headStack);
+                player.inventory.insertStack(headStack);
             } else if (type.isMiddle) {
                 headStack.setCount(headStack.getMaxCount());
-                player.currentScreenHandler.setCursorStack(headStack);
+                player.inventory.setCursorStack(headStack);
             } else {
-                player.currentScreenHandler.setCursorStack(headStack);
+                player.inventory.setCursorStack(headStack);
             }
         } else if (headStack.isItemEqualIgnoreDamage(cursorStack) && ItemStack.areTagsEqual(headStack, cursorStack)) {
             if (type.isLeft) {
@@ -93,10 +93,10 @@ public class HeadGui extends SimpleGui {
                 cursorStack.decrement(1);
             } else if (type.isMiddle) {
                 headStack.setCount(headStack.getMaxCount());
-                player.currentScreenHandler.setCursorStack(headStack);
+                player.inventory.setCursorStack(headStack);
             }
         } else {
-            player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
+            player.inventory.setCursorStack(ItemStack.EMPTY);
         }
     }
 
@@ -292,7 +292,7 @@ public class HeadGui extends SimpleGui {
                     ownerTag.put("Properties", propertiesTag);
 
                     this.setSlot(2, outputStack, (index, type1, action) -> {
-                        player.currentScreenHandler.setCursorStack(outputStack.copy());
+                        player.inventory.setCursorStack(outputStack.copy());
                     });
                 });
             }
