@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -259,15 +260,15 @@ public class HeadGui extends SimpleGui {
                 CompletableFuture.runAsync(() -> {
                     MinecraftServer server = player.server;
 
-                    GameProfile profile = server.getUserCache().findByName(this.getInput());
+                    Optional<GameProfile> possibleProfile = server.getUserCache().findByName(this.getInput());
                     MinecraftSessionService sessionService = server.getSessionService();
 
-                    if (profile == null) {
+                    if (possibleProfile.isEmpty()) {
                         outputStack.removeSubTag("SkullOwner");
                         return;
                     }
 
-                    profile = sessionService.fillProfileProperties(profile, true);
+                    GameProfile profile = sessionService.fillProfileProperties(possibleProfile.get(), true);
                     Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, true);
 
                     if (textures.isEmpty()) {
