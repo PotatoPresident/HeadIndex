@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class Head {
-    @Nullable
     public final String name;
     public final UUID uuid;
     public final String value;
