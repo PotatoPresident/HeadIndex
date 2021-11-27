@@ -1,10 +1,10 @@
 plugins {
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom' version '0.10.+'
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -26,8 +26,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation include("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-    modImplementation include("eu.pb4:sgui:1.0.0-rc5+1.17.1")
-    modImplementation include("fr.catcore:server-translations-api:1.4.7+1.17")
+    modImplementation include("eu.pb4:sgui:1.0.0-rc6+1.18-pre5")
+    modImplementation include("fr.catcore:server-translations-api:1.4.8+1.18-pre1")
 }
 
 processResources {

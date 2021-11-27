@@ -148,7 +148,7 @@ public class HeadGui extends SimpleGui {
                     MinecraftSessionService sessionService = server.getSessionService();
 
                     if (possibleProfile.isEmpty()) {
-                        outputStack.removeSubTag("SkullOwner");
+                        outputStack.removeSubNbt("SkullOwner");
                         return;
                     }
 
@@ -156,13 +156,13 @@ public class HeadGui extends SimpleGui {
                     Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, true);
 
                     if (textures.isEmpty()) {
-                        outputStack.removeSubTag("SkullOwner");
+                        outputStack.removeSubNbt("SkullOwner");
                         return;
                     }
 
                     MinecraftProfileTexture texture = textures.get(MinecraftProfileTexture.Type.SKIN);
 
-                    NbtCompound ownerTag = outputStack.getOrCreateSubTag("SkullOwner");
+                    NbtCompound ownerTag = outputStack.getOrCreateSubNbt("SkullOwner");
                     ownerTag.putUuid("Id", profile.getId());
                     ownerTag.putString("Name", profile.getName());
 

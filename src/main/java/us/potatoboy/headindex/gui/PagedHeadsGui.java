@@ -124,7 +124,7 @@ public class PagedHeadsGui extends LayeredGui {
             } else {
                 player.currentScreenHandler.setCursorStack(headStack);
             }
-        } else if (headStack.isItemEqualIgnoreDamage(cursorStack) && ItemStack.areTagsEqual(headStack, cursorStack)) {
+        } else if (headStack.isItemEqualIgnoreDamage(cursorStack) && ItemStack.areNbtEqual(headStack, cursorStack)) {
             if (type.isLeft) {
                 cursorStack.increment(1);
             } else if (type.isRight) {

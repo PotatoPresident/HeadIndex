@@ -45,7 +45,7 @@ public class Head {
         }
 
         if (tags != null) {
-            NbtCompound displayTag = stack.getOrCreateSubTag("display");
+            NbtCompound displayTag = stack.getOrCreateSubNbt("display");
             NbtList loreTag = new NbtList();
 
             loreTag.add(NbtString.of(Text.Serializer.toJson(new LiteralText(tags))));
@@ -53,7 +53,7 @@ public class Head {
             displayTag.put("Lore", loreTag);
         }
 
-        NbtCompound ownerTag = stack.getOrCreateSubTag("SkullOwner");
+        NbtCompound ownerTag = stack.getOrCreateSubNbt("SkullOwner");
         ownerTag.putUuid("Id", uuid);
 
         NbtCompound propertiesTag = new NbtCompound();

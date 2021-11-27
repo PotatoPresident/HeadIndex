@@ -26,11 +26,16 @@ public class HeadDatabaseAPI {
                 URLConnection connection = new URL(String.format(apiUrl, category.name)).openConnection();
                 connection.connect();
 
-                JsonArray headsJson = new JsonParser().parse(new InputStreamReader((InputStream) connection.getContent())).getAsJsonArray();
+                JsonArray headsJson = JsonParser.parseReader(new InputStreamReader((InputStream) connection.getContent())).getAsJsonArray();
 
                 for (JsonElement headJson : headsJson) {
-                    Head head = gson.fromJson(headJson, Head.class);
-                    heads.put(category, head);
+                    try {
+                        Head head = gson.fromJson(headJson, Head.class);
+                        heads.put(category, head);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        HeadIndex.LOGGER.warn("Invalid head: " + headJson);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
