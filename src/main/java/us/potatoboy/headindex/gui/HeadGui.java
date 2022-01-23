@@ -17,12 +17,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import org.apache.commons.codec.binary.Base64;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Head;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -152,8 +152,8 @@ public class HeadGui extends SimpleGui {
                         return;
                     }
 
-                    GameProfile profile = sessionService.fillProfileProperties(possibleProfile.get(), true);
-                    Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, true);
+                    GameProfile profile = sessionService.fillProfileProperties(possibleProfile.get(), false);
+                    Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, false);
 
                     if (textures.isEmpty()) {
                         outputStack.removeSubNbt("SkullOwner");
@@ -170,7 +170,7 @@ public class HeadGui extends SimpleGui {
                     NbtList texturesTag = new NbtList();
                     NbtCompound textureValue = new NbtCompound();
 
-                    textureValue.putString("Value", new String(Base64.encodeBase64(String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", texture.getUrl()).getBytes()), StandardCharsets.UTF_8));
+                    textureValue.putString("Value", new String(Base64.getEncoder().encode(String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", texture.getUrl()).getBytes()), StandardCharsets.UTF_8));
 
                     texturesTag.add(textureValue);
                     propertiesTag.put("textures", texturesTag);
