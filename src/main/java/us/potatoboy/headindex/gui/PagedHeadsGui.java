@@ -8,10 +8,8 @@ import eu.pb4.sgui.api.gui.layered.LayeredGui;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import us.potatoboy.headindex.api.Head;
 
@@ -30,12 +28,12 @@ public class PagedHeadsGui extends LayeredGui {
     private static final ItemStack backwardArrow = new Head(
             UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwODI5OGZmMmIyNjk1MWQ2ODNlNWFkZTQ2YTQyZTkwYzJmN2M3ZGQ0MWJhYTkwOGJjNTg1MmY4YzMyZTU4MyJ9fX0="
-    ).createStack().setCustomName(new TranslatableText("spectatorMenu.previous_page").setStyle(regular));
+    ).createStack().setCustomName(Text.translatable("spectatorMenu.previous_page").setStyle(regular));
 
     private static final ItemStack forwardArrow = new Head(
             UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ=="
-    ).createStack().setCustomName(new TranslatableText("spectatorMenu.next_page").setStyle(regular));
+    ).createStack().setCustomName(Text.translatable("spectatorMenu.next_page").setStyle(regular));
 
     public PagedHeadsGui(GuiInterface parent, List<Head> heads) {
         super(ScreenHandlerType.GENERIC_9X6, parent.getPlayer(), false);
@@ -51,7 +49,7 @@ public class PagedHeadsGui extends LayeredGui {
         Layer navigation = new Layer(1, 9);
         this.navigationLayer = navigation;
         navigation.setSlot(0, new GuiElementBuilder(Items.BARRIER)
-                .setName(new TranslatableText("text.headindex.back"))
+                .setName(Text.translatable("text.headindex.back"))
                 .setCallback((index, type, action) -> this.close())
         );
         updateNavigation();
@@ -65,7 +63,7 @@ public class PagedHeadsGui extends LayeredGui {
     private void updateNavigation() {
         navigationLayer.setSlot(
                 3, (this.page != 0 ? backwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
-                        .setCustomName(new TranslatableText("spectatorMenu.previous_page").setStyle(regular)),
+                        .setCustomName(Text.translatable("spectatorMenu.previous_page").setStyle(regular)),
                 ((index, type, action) -> {
                     this.page -= 1;
                     if (this.page < 0) {
@@ -78,7 +76,7 @@ public class PagedHeadsGui extends LayeredGui {
 
         navigationLayer.setSlot(
                 5, (this.page + 1 < getMaxPage() ? forwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
-                        .setCustomName(new TranslatableText("spectatorMenu.next_page").setStyle(regular)),
+                        .setCustomName(Text.translatable("spectatorMenu.next_page").setStyle(regular)),
                 ((index, type, action) -> {
                     this.page += 1;
                     if (this.page >= getMaxPage()) {
@@ -90,7 +88,7 @@ public class PagedHeadsGui extends LayeredGui {
         );
 
         navigationLayer.setSlot(4, new GuiElementBuilder(Items.PAPER)
-                .setName(new LiteralText(this.page + 1 + " / " + this.getMaxPage()).setStyle(regular))
+                .setName(Text.literal(this.page + 1 + " / " + this.getMaxPage()).setStyle(regular))
         );
     }
 

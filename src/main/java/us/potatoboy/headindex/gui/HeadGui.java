@@ -15,7 +15,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Head;
@@ -42,12 +42,12 @@ public class HeadGui extends SimpleGui {
             ++index;
         }
 
-        this.setTitle(new TranslatableText("text.headindex.title"));
+        this.setTitle(Text.translatable("text.headindex.title"));
 
         if (Permissions.check(player, "headindex.search", 2)) {
             this.setSlot(this.getSize() - 1, new GuiElementBuilder()
                     .setItem(Items.NAME_TAG)
-                    .setName(new TranslatableText("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
+                    .setName(Text.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
                     .setCallback((index1, type1, action) -> {
                         this.close();
                         new SearchInputGui().open();
@@ -57,7 +57,7 @@ public class HeadGui extends SimpleGui {
         if (Permissions.check(player, "headindex.playername", 2)) {
             this.setSlot(this.getSize() - 2, new GuiElementBuilder()
                     .setItem(Items.PLAYER_HEAD)
-                    .setName(new TranslatableText("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE)))
+                    .setName(Text.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE)))
                     .setCallback((index1, type1, action) -> {
                         this.close();
                         new PlayerInputGui().open();
@@ -81,7 +81,7 @@ public class HeadGui extends SimpleGui {
                 .collect(Collectors.toList());
 
         var headsGui = new PagedHeadsGui(this, heads);
-        headsGui.setTitle(new TranslatableText("text.headindex.search.output", search));
+        headsGui.setTitle(Text.translatable("text.headindex.search.output", search));
         headsGui.open();
     }
 
@@ -92,21 +92,21 @@ public class HeadGui extends SimpleGui {
         public SearchInputGui() {
             super(HeadGui.this.player, false);
 
-            inputStack.setCustomName(new TranslatableText("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)));
-            outputStack.setCustomName(new TranslatableText("text.headindex.search.output").setStyle(Style.EMPTY.withItalic(false)));
+            inputStack.setCustomName(Text.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)));
+            outputStack.setCustomName(Text.translatable("text.headindex.search.output").setStyle(Style.EMPTY.withItalic(false)));
 
             this.setSlot(1, inputStack);
 
             this.setSlot(2, outputStack, (index, type, action, gui) -> openSearch(this.getInput()));
             this.setDefaultInputValue("");
 
-            this.setTitle(new TranslatableText("text.headindex.search"));
+            this.setTitle(Text.translatable("text.headindex.search"));
         }
 
         @Override
         public void onInput(String input) {
             super.onInput(input);
-            outputStack.setCustomName(new TranslatableText("text.headindex.search.output", input).setStyle(Style.EMPTY.withItalic(false)));
+            outputStack.setCustomName(Text.translatable("text.headindex.search.output", input).setStyle(Style.EMPTY.withItalic(false)));
             this.setSlot(2, outputStack, (index, type, action, gui) -> openSearch(this.getInput()));
         }
 
@@ -125,7 +125,7 @@ public class HeadGui extends SimpleGui {
         public PlayerInputGui() {
             super(HeadGui.this.player, false);
 
-            inputStack.setCustomName(new TranslatableText("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false)));
+            inputStack.setCustomName(Text.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false)));
 
             this.setSlot(1, inputStack);
 
@@ -133,7 +133,7 @@ public class HeadGui extends SimpleGui {
 
             this.setDefaultInputValue("");
 
-            this.setTitle(new TranslatableText("text.headindex.playername"));
+            this.setTitle(Text.translatable("text.headindex.playername"));
         }
 
         @Override

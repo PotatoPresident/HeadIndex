@@ -5,10 +5,9 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -41,14 +40,14 @@ public class Head {
     public ItemStack createStack() {
         ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
         if (name != null) {
-            stack.setCustomName(new LiteralText(name));
+            stack.setCustomName(Text.literal(name));
         }
 
         if (tags != null) {
             NbtCompound displayTag = stack.getOrCreateSubNbt("display");
             NbtList loreTag = new NbtList();
 
-            loreTag.add(NbtString.of(Text.Serializer.toJson(new LiteralText(tags))));
+            loreTag.add(NbtString.of(Text.Serializer.toJson(Text.literal(tags))));
 
             displayTag.put("Lore", loreTag);
         }
@@ -142,8 +141,8 @@ public class Head {
                             .setStyle(Style.EMPTY.withItalic(false)));
         }
 
-        public TranslatableText getDisplayName() {
-            return new TranslatableText("text.headindex.category." + name);
+        public MutableText getDisplayName() {
+            return Text.translatable("text.headindex.category." + name);
         }
     }
 }
