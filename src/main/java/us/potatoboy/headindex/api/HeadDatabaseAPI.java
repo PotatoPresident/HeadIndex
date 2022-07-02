@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
+import org.apache.commons.io.FileUtils;
 import us.potatoboy.headindex.HeadIndex;
 
 import java.io.BufferedInputStream;
@@ -33,8 +34,7 @@ public class HeadDatabaseAPI {
                 URLConnection connection = new URL(String.format(apiUrl, category.name)).openConnection();
 
                 var stream = new BufferedInputStream(connection.getInputStream());
-                throw new IOException("Not implemented");
-                //FileUtils.copyInputStreamToFile(stream, cachePath.resolve(category.name + ".json").toFile());
+                FileUtils.copyInputStreamToFile(stream, cachePath.resolve(category.name + ".json").toFile());
             } catch (IOException e) {
                 HeadIndex.LOGGER.warn("Failed to save new heads to cache");
             }
