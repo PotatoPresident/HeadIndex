@@ -17,7 +17,7 @@ Head Index also supports setting an item or economy (Common Economy API) cost fo
 
 ### Config
 `config/head-index.json`
-```json
+```json5
 {
   "permissionLevel": 2, // The default permission level for the commands. Set to 0 to allow all players access
   "economyType": "FREE", // The type of economy to use. Set to FREE to disable economy, ITEM to use an item, or ECONOMY to use an economy currency
