@@ -40,7 +40,7 @@ public class Head {
     public ItemStack createStack() {
         ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
         if (name != null) {
-            stack.setCustomName(Text.literal(name));
+            stack.setCustomName(Text.literal(name).styled(style -> style.withItalic(false)));
         }
 
         if (tags != null) {

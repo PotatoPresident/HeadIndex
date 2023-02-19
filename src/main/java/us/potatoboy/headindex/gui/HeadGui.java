@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Head;
+import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -175,8 +176,25 @@ public class HeadGui extends SimpleGui {
                     texturesTag.add(textureValue);
                     propertiesTag.put("textures", texturesTag);
                     ownerTag.put("Properties", propertiesTag);
+                    
+                    var builder = GuiElementBuilder.from(outputStack);
+                    if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
+                        builder.addLoreLine(Text.empty());
+                        builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().server)).styled(style -> style.withColor(Formatting.RED)));
+                    }
 
-                    this.setSlot(2, outputStack, (index, type, action, gui) -> player.currentScreenHandler.setCursorStack(outputStack.copy()));
+                    this.setSlot(2, builder.asStack(), (index, type, action, gui) ->
+                            HeadIndex.tryPurchase(player, 1, () -> {
+                                var cursorStack = getPlayer().currentScreenHandler.getCursorStack();
+                                if (player.currentScreenHandler.getCursorStack().isEmpty()) {
+                                    player.currentScreenHandler.setCursorStack(outputStack.copy());
+                                } else if (outputStack.isItemEqual(cursorStack) && ItemStack.areNbtEqual(outputStack, cursorStack) && cursorStack.getCount() < cursorStack.getMaxCount()) {
+                                    cursorStack.increment(1);
+                                } else {
+                                    player.dropItem(outputStack.copy(), false);
+                                }
+                            })
+                    );
                 });
             }
         }

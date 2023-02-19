@@ -14,5 +14,6 @@
   "text.headindex.back": "Back",
   "text.headindex.search": "Search",
   "text.headindex.search.output": "Search: %s",
-  "text.headindex.playername": "Playername"
+  "text.headindex.playername": "Playername",
+  "text.headindex.price": "Price: %s"
 }

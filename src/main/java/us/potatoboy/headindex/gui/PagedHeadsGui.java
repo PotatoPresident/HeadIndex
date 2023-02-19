@@ -11,7 +11,9 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Head;
+import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +43,7 @@ public class PagedHeadsGui extends LayeredGui {
         this.heads = heads;
         this.parent = parent;
 
-        Layer content = new Layer(5, 9);
-        this.contentLayer = content;
+        this.contentLayer = new Layer(5, 9);
         updateContent();
         this.addLayer(contentLayer, 0, 0);
 
@@ -96,7 +97,13 @@ public class PagedHeadsGui extends LayeredGui {
         for (int i = 0; i < 45; i++) {
             if (heads.size() > i + (this.page * 45)) {
                 Head head = heads.get(i + (this.page * 45));
-                contentLayer.setSlot(i, head.createStack(), (index, type, action) -> processHeadClick(head, type));
+				var builder = GuiElementBuilder.from(head.createStack());
+				if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
+                    builder.addLoreLine(Text.empty());
+					builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().server)).styled(style -> style.withColor(Formatting.RED)));
+				}
+				
+                contentLayer.setSlot(i, builder.asStack(), (index, type, action) -> processHeadClick(head, type));
             } else {
                 contentLayer.setSlot(i, Items.AIR.getDefaultStack());
             }
@@ -110,29 +117,37 @@ public class PagedHeadsGui extends LayeredGui {
 
     private void processHeadClick(Head head, ClickType type) {
         var player = getPlayer();
+        
         ItemStack cursorStack = getPlayer().currentScreenHandler.getCursorStack();
         ItemStack headStack = head.createStack();
 
         if (cursorStack.isEmpty()) {
             if (type.shift) {
-                player.getInventory().insertStack(headStack);
+                HeadIndex.tryPurchase(player, 1, () -> player.getInventory().insertStack(headStack));
             } else if (type.isMiddle) {
-                headStack.setCount(headStack.getMaxCount());
-                player.currentScreenHandler.setCursorStack(headStack);
+				HeadIndex.tryPurchase(player, headStack.getMaxCount(), () -> {
+					headStack.setCount(headStack.getMaxCount());
+					player.currentScreenHandler.setCursorStack(headStack);
+				});
             } else {
-                player.currentScreenHandler.setCursorStack(headStack);
+				HeadIndex.tryPurchase(player, 1, () -> player.currentScreenHandler.setCursorStack(headStack));
             }
-        } else if (headStack.isItemEqual(cursorStack) && ItemStack.areNbtEqual(headStack, cursorStack)) {
+        } else if (cursorStack.getMaxCount() <= cursorStack.getCount()) {
+			return;
+		} else if (headStack.isItemEqual(cursorStack) && ItemStack.areNbtEqual(headStack, cursorStack)) {
             if (type.isLeft) {
-                cursorStack.increment(1);
+				HeadIndex.tryPurchase(player, 1, () -> cursorStack.increment(1));
             } else if (type.isRight) {
-                cursorStack.decrement(1);
+				if (HeadIndex.config.economyType == HeadIndexConfig.EconomyType.FREE) cursorStack.decrement(1);
             } else if (type.isMiddle) {
-                headStack.setCount(headStack.getMaxCount());
-                player.currentScreenHandler.setCursorStack(headStack);
+				var amount = headStack.getMaxCount() - cursorStack.getCount();
+				HeadIndex.tryPurchase(player, amount, () -> {
+					headStack.setCount(headStack.getMaxCount());
+					player.currentScreenHandler.setCursorStack(headStack);
+				});
             }
         } else {
-            player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
+			if (HeadIndex.config.economyType == HeadIndexConfig.EconomyType.FREE) player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
         }
     }
 
