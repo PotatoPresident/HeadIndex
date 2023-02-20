@@ -45,7 +45,7 @@ public class HeadGui extends SimpleGui {
 
         this.setTitle(Text.translatable("text.headindex.title"));
 
-        if (Permissions.check(player, "headindex.search", 2)) {
+        if (Permissions.check(player, "headindex.search", HeadIndex.config.permissionLevel)) {
             this.setSlot(this.getSize() - 1, new GuiElementBuilder()
                     .setItem(Items.NAME_TAG)
                     .setName(Text.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
@@ -55,7 +55,7 @@ public class HeadGui extends SimpleGui {
                     }));
         }
 
-        if (Permissions.check(player, "headindex.playername", 2)) {
+        if (Permissions.check(player, "headindex.playername", HeadIndex.config.permissionLevel)) {
             this.setSlot(this.getSize() - 2, new GuiElementBuilder()
                     .setItem(Items.PLAYER_HEAD)
                     .setName(Text.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(Formatting.WHITE)))
