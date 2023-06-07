@@ -188,7 +188,7 @@ public class HeadGui extends SimpleGui {
                                 var cursorStack = getPlayer().currentScreenHandler.getCursorStack();
                                 if (player.currentScreenHandler.getCursorStack().isEmpty()) {
                                     player.currentScreenHandler.setCursorStack(outputStack.copy());
-                                } else if (outputStack.isItemEqual(cursorStack) && ItemStack.areNbtEqual(outputStack, cursorStack) && cursorStack.getCount() < cursorStack.getMaxCount()) {
+                                } else if (ItemStack.canCombine(outputStack, cursorStack) && cursorStack.getCount() < cursorStack.getMaxCount()) {
                                     cursorStack.increment(1);
                                 } else {
                                     player.dropItem(outputStack.copy(), false);

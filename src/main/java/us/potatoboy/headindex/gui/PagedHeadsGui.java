@@ -134,7 +134,7 @@ public class PagedHeadsGui extends LayeredGui {
             }
         } else if (cursorStack.getMaxCount() <= cursorStack.getCount()) {
 			return;
-		} else if (headStack.isItemEqual(cursorStack) && ItemStack.areNbtEqual(headStack, cursorStack)) {
+		} else if (ItemStack.canCombine(headStack, cursorStack)) {
             if (type.isLeft) {
 				HeadIndex.tryPurchase(player, 1, () -> cursorStack.increment(1));
             } else if (type.isRight) {
