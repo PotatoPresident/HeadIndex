@@ -3,6 +3,7 @@ package us.potatoboy.headindex.gui;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.ProfileResult;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -153,7 +154,13 @@ public class HeadGui extends SimpleGui {
                         return;
                     }
 
-                    GameProfile profile = sessionService.fillProfileProperties(possibleProfile.get(), false);
+                    ProfileResult profileResult = sessionService.fetchProfile(possibleProfile.get().getId(), false);
+                    if (profileResult == null) {
+                        outputStack.removeSubNbt("SkullOwner");
+                        return;
+                    }
+
+                    GameProfile profile = profileResult.profile();
                     Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, false);
 
                     if (textures.isEmpty()) {
