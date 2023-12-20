@@ -2,6 +2,7 @@ package us.potatoboy.headindex.gui;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -25,7 +26,6 @@ import us.potatoboy.headindex.config.HeadIndexConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -161,14 +161,14 @@ public class HeadGui extends SimpleGui {
                     }
 
                     GameProfile profile = profileResult.profile();
-                    Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, false);
+                    MinecraftProfileTextures textures = sessionService.getTextures(profile);
 
-                    if (textures.isEmpty()) {
+                    if (textures == MinecraftProfileTextures.EMPTY) {
                         outputStack.removeSubNbt("SkullOwner");
                         return;
                     }
 
-                    MinecraftProfileTexture texture = textures.get(MinecraftProfileTexture.Type.SKIN);
+                    MinecraftProfileTexture texture = textures.skin();
 
                     NbtCompound ownerTag = outputStack.getOrCreateSubNbt("SkullOwner");
                     ownerTag.putUuid("Id", profile.getId());

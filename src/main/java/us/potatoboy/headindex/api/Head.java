@@ -47,7 +47,7 @@ public class Head {
             NbtCompound displayTag = stack.getOrCreateSubNbt("display");
             NbtList loreTag = new NbtList();
 
-            loreTag.add(NbtString.of(Text.Serializer.toJson(Text.literal(tags))));
+            loreTag.add(NbtString.of(Text.Serialization.toJsonString(Text.literal(tags))));
 
             displayTag.put("Lore", loreTag);
         }
