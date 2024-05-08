@@ -9,6 +9,8 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +45,22 @@ public class HeadIndex implements ModInitializer {
 
         switch (HeadIndex.config.economyType) {
             case FREE -> onPurchase.run();
+            case TAG -> {
+                ItemStack stack = Items.PLAYER_HEAD.getDefaultStack();
+                for (int i = 0; i < player.getInventory().size(); i++) {
+                    ItemStack slotStack = player.getInventory().getStack(i);
+                    if (slotStack.isIn(HeadIndex.config.getCostTag()) && slotStack.getCount() >= amount) {
+                        stack = slotStack;
+                    }
+                }
+                try (Transaction transaction = Transaction.openOuter()) {
+                    long extracted = PlayerInventoryStorage.of(player).extract(ItemVariant.of(stack), trueAmount, transaction);
+                    if (extracted == trueAmount) {
+                        transaction.commit();
+                        onPurchase.run();
+                    }
+                }
+            }
             case ITEM -> {
                 try (Transaction transaction = Transaction.openOuter()) {
                     long extracted = PlayerInventoryStorage.of(player).extract(ItemVariant.of(HeadIndex.config.getCostItem()), trueAmount, transaction);
