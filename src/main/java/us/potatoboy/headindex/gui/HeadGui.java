@@ -1,18 +1,16 @@
 package us.potatoboy.headindex.gui;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,9 +21,7 @@ import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Head;
 import us.potatoboy.headindex.config.HeadIndexConfig;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -94,8 +90,8 @@ public class HeadGui extends SimpleGui {
         public SearchInputGui() {
             super(HeadGui.this.player, false);
 
-            inputStack.setCustomName(Text.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)));
-            outputStack.setCustomName(Text.translatable("text.headindex.search.output").setStyle(Style.EMPTY.withItalic(false)));
+            inputStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)));
+            outputStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("text.headindex.search.output").setStyle(Style.EMPTY.withItalic(false)));
 
             this.setSlot(1, inputStack);
 
@@ -108,7 +104,7 @@ public class HeadGui extends SimpleGui {
         @Override
         public void onInput(String input) {
             super.onInput(input);
-            outputStack.setCustomName(Text.translatable("text.headindex.search.output", input).setStyle(Style.EMPTY.withItalic(false)));
+            outputStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("text.headindex.search.output", input).setStyle(Style.EMPTY.withItalic(false)));
             this.setSlot(2, outputStack, (index, type, action, gui) -> openSearch(this.getInput()));
         }
 
@@ -127,7 +123,7 @@ public class HeadGui extends SimpleGui {
         public PlayerInputGui() {
             super(HeadGui.this.player, false);
 
-            inputStack.setCustomName(Text.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false)));
+            inputStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false)));
 
             this.setSlot(1, inputStack);
 
@@ -150,40 +146,18 @@ public class HeadGui extends SimpleGui {
                     MinecraftSessionService sessionService = server.getSessionService();
 
                     if (possibleProfile.isEmpty()) {
-                        outputStack.removeSubNbt("SkullOwner");
+                        outputStack.remove(DataComponentTypes.PROFILE);
                         return;
                     }
 
                     ProfileResult profileResult = sessionService.fetchProfile(possibleProfile.get().getId(), false);
                     if (profileResult == null) {
-                        outputStack.removeSubNbt("SkullOwner");
-                        return;
+                        outputStack.remove(DataComponentTypes.PROFILE);
+                    } else {
+                        GameProfile profile = profileResult.profile();
+                        outputStack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
                     }
 
-                    GameProfile profile = profileResult.profile();
-                    MinecraftProfileTextures textures = sessionService.getTextures(profile);
-
-                    if (textures == MinecraftProfileTextures.EMPTY) {
-                        outputStack.removeSubNbt("SkullOwner");
-                        return;
-                    }
-
-                    MinecraftProfileTexture texture = textures.skin();
-
-                    NbtCompound ownerTag = outputStack.getOrCreateSubNbt("SkullOwner");
-                    ownerTag.putUuid("Id", profile.getId());
-                    ownerTag.putString("Name", profile.getName());
-
-                    NbtCompound propertiesTag = new NbtCompound();
-                    NbtList texturesTag = new NbtList();
-                    NbtCompound textureValue = new NbtCompound();
-
-                    textureValue.putString("Value", new String(Base64.getEncoder().encode(String.format("{\"textures\":{\"SKIN\":{\"url\":\"%s\"}}}", texture.getUrl()).getBytes()), StandardCharsets.UTF_8));
-
-                    texturesTag.add(textureValue);
-                    propertiesTag.put("textures", texturesTag);
-                    ownerTag.put("Properties", propertiesTag);
-                    
                     var builder = GuiElementBuilder.from(outputStack);
                     if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
                         builder.addLoreLine(Text.empty());
@@ -195,7 +169,7 @@ public class HeadGui extends SimpleGui {
                                 var cursorStack = getPlayer().currentScreenHandler.getCursorStack();
                                 if (player.currentScreenHandler.getCursorStack().isEmpty()) {
                                     player.currentScreenHandler.setCursorStack(outputStack.copy());
-                                } else if (ItemStack.canCombine(outputStack, cursorStack) && cursorStack.getCount() < cursorStack.getMaxCount()) {
+                                } else if (ItemStack.areItemsEqual(outputStack, cursorStack) && cursorStack.getCount() < cursorStack.getMaxCount()) {
                                     cursorStack.increment(1);
                                 } else {
                                     player.dropItem(outputStack.copy(), false);

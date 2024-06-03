@@ -1,15 +1,18 @@
 package us.potatoboy.headindex.api;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Head {
@@ -37,35 +40,25 @@ public class Head {
         return tags == null ? "" : tags;
     }
 
-    public ItemStack createStack() {
+    public ItemStack createStack(Text displayName) {
         ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
-        if (name != null) {
-            stack.setCustomName(Text.literal(name).styled(style -> style.withItalic(false)));
+        if (displayName != null) {
+            stack.set(DataComponentTypes.CUSTOM_NAME, displayName);
         }
 
         if (tags != null) {
-            NbtCompound displayTag = stack.getOrCreateSubNbt("display");
-            NbtList loreTag = new NbtList();
-
-            loreTag.add(NbtString.of(Text.Serialization.toJsonString(Text.literal(tags))));
-
-            displayTag.put("Lore", loreTag);
+            stack.set(DataComponentTypes.LORE, new LoreComponent(List.of(Text.literal(tags))));
         }
 
-        NbtCompound ownerTag = stack.getOrCreateSubNbt("SkullOwner");
-        ownerTag.putUuid("Id", uuid);
-
-        NbtCompound propertiesTag = new NbtCompound();
-        NbtList texturesTag = new NbtList();
-        NbtCompound textureValue = new NbtCompound();
-
-        textureValue.putString("Value", value);
-
-        texturesTag.add(textureValue);
-        propertiesTag.put("textures", texturesTag);
-        ownerTag.put("Properties", propertiesTag);
+        var profile = new GameProfile(uuid, "");
+        profile.getProperties().put("textures", new Property("textures", value));
+        stack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
 
         return stack;
+    }
+
+    public ItemStack createStack() {
+        return createStack(name != null ? Text.literal(name).setStyle(Style.EMPTY.withItalic(false)) : null);
     }
 
     public enum Category {
@@ -136,9 +129,10 @@ public class Head {
         }
 
         public ItemStack createStack() {
-            return icon
-                    .setCustomName(getDisplayName()
-                            .setStyle(Style.EMPTY.withItalic(false)));
+            icon.set(DataComponentTypes.CUSTOM_NAME, getDisplayName()
+                            .setStyle(Style.EMPTY.withItalic(false))
+            );
+            return icon;
         }
 
         public MutableText getDisplayName() {

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.4.+'
+    id 'fabric-loom' version '1.6.+'
     id 'maven-publish'
 }
 
@@ -11,9 +11,8 @@ base {
 }
 
 repositories {
+    mavenCentral()
     maven { url = "https://maven.nucleoid.xyz/" }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url = "https://jitpack.io/" }
 }
 
 dependencies {
@@ -25,9 +24,9 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation include("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
-    modImplementation include("eu.pb4:sgui:1.4.0+1.20.4")
-    modImplementation include("xyz.nucleoid:server-translations-api:2.2.0+1.20.3-rc1")
+    modImplementation include("me.lucko:fabric-permissions-api:0.3.1")
+    modImplementation include("eu.pb4:sgui:1.5.0+1.20.5")
+    modImplementation include("xyz.nucleoid:server-translations-api:2.3.0+1.20.5-rc2")
     modImplementation include("eu.pb4:common-economy-api:1.1.1")
 }
 
@@ -37,21 +36,6 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-    it.options.release = 17
-}
-
-java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    withSourcesJar()
-
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
