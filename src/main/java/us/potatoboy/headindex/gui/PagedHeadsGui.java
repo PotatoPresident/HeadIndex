@@ -30,12 +30,12 @@ public class PagedHeadsGui extends LayeredGui {
     private static final ItemStack backwardArrow = new Head(
             UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwODI5OGZmMmIyNjk1MWQ2ODNlNWFkZTQ2YTQyZTkwYzJmN2M3ZGQ0MWJhYTkwOGJjNTg1MmY4YzMyZTU4MyJ9fX0="
-    ).createStack().setCustomName(Text.translatable("spectatorMenu.previous_page").setStyle(regular));
+    ).createStack(Text.translatable("spectatorMenu.previous_page").setStyle(regular));
 
     private static final ItemStack forwardArrow = new Head(
             UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ=="
-    ).createStack().setCustomName(Text.translatable("spectatorMenu.next_page").setStyle(regular));
+    ).createStack(Text.translatable("spectatorMenu.next_page").setStyle(regular));
 
     public PagedHeadsGui(GuiInterface parent, List<Head> heads) {
         super(ScreenHandlerType.GENERIC_9X6, parent.getPlayer(), false);
@@ -63,29 +63,31 @@ public class PagedHeadsGui extends LayeredGui {
 
     private void updateNavigation() {
         navigationLayer.setSlot(
-                3, (this.page != 0 ? backwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
-                        .setCustomName(Text.translatable("spectatorMenu.previous_page").setStyle(regular)),
-                ((index, type, action) -> {
-                    this.page -= 1;
-                    if (this.page < 0) {
-                        this.page = 0;
-                    }
+                3, GuiElementBuilder
+                        .from(this.page != 0 ? backwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
+                        .setName(Text.translatable("spectatorMenu.previous_page").setStyle(regular))
+                        .setCallback((index, type, action) -> {
+                            this.page -= 1;
+                            if (this.page < 0) {
+                                this.page = 0;
+                            }
 
-                    updatePage();
-                })
+                            updatePage();
+                        })
         );
 
         navigationLayer.setSlot(
-                5, (this.page + 1 < getMaxPage() ? forwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
-                        .setCustomName(Text.translatable("spectatorMenu.next_page").setStyle(regular)),
-                ((index, type, action) -> {
-                    this.page += 1;
-                    if (this.page >= getMaxPage()) {
-                        this.page = getMaxPage() - 1;
-                    }
+                5, GuiElementBuilder
+                        .from(this.page + 1 < getMaxPage() ? forwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
+                        .setName(Text.translatable("spectatorMenu.next_page").setStyle(regular))
+                        .setCallback((index, type, action) -> {
+                            this.page += 1;
+                            if (this.page >= getMaxPage()) {
+                                this.page = getMaxPage() - 1;
+                            }
 
-                    updatePage();
-                })
+                            updatePage();
+                        })
         );
 
         navigationLayer.setSlot(4, new GuiElementBuilder(Items.PAPER)
@@ -102,7 +104,7 @@ public class PagedHeadsGui extends LayeredGui {
                     builder.addLoreLine(Text.empty());
 					builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().server)).styled(style -> style.withColor(Formatting.RED)));
 				}
-				
+
                 contentLayer.setSlot(i, builder.asStack(), (index, type, action) -> processHeadClick(head, type));
             } else {
                 contentLayer.setSlot(i, Items.AIR.getDefaultStack());
@@ -117,7 +119,7 @@ public class PagedHeadsGui extends LayeredGui {
 
     private void processHeadClick(Head head, ClickType type) {
         var player = getPlayer();
-        
+
         ItemStack cursorStack = getPlayer().currentScreenHandler.getCursorStack();
         ItemStack headStack = head.createStack();
 
@@ -134,7 +136,7 @@ public class PagedHeadsGui extends LayeredGui {
             }
         } else if (cursorStack.getMaxCount() <= cursorStack.getCount()) {
 			return;
-		} else if (ItemStack.canCombine(headStack, cursorStack)) {
+		} else if (ItemStack.areItemsEqual(headStack, cursorStack)) {
             if (type.isLeft) {
 				HeadIndex.tryPurchase(player, 1, () -> cursorStack.increment(1));
             } else if (type.isRight) {
