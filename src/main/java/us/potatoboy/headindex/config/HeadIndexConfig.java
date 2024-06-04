@@ -5,6 +5,7 @@ import eu.pb4.common.economy.api.CommonEconomy;
 import eu.pb4.common.economy.api.EconomyCurrency;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -17,19 +18,21 @@ public class HeadIndexConfig {
 	private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Identifier.class, new IdentifierSerializer()).setPrettyPrinting().create();
 
 	public enum EconomyType {
+		TAG,
 		ITEM,
 		ECONOMY,
 		FREE
 	}
-	
+
 	public int permissionLevel = 2;
-	
+
 	public EconomyType economyType = EconomyType.FREE;
 	public Identifier costType = new Identifier("minecraft", "diamond");
 	public int costAmount = 1;
 
 	public Text getCost(MinecraftServer server) {
 		return switch (economyType) {
+			case TAG -> Text.translatable(getCostTag().getTranslationKey()).append(Text.of(" × " + costAmount));
 			case ITEM -> Text.empty().append(getCostItem().getName()).append(Text.of(" × " + costAmount));
 			case ECONOMY -> getCostCurrency(server).formatValueText(costAmount, false);
 			case FREE -> Text.empty();
@@ -43,7 +46,11 @@ public class HeadIndexConfig {
 	public EconomyCurrency getCostCurrency(MinecraftServer server) {
 		return CommonEconomy.getCurrency(server, costType);
 	}
-	
+
+	public TagKey<Item> getCostTag() {
+		return TagKey.of(Registries.ITEM.getKey(), costType);
+	}
+
 	public static HeadIndexConfig loadConfig(File file) {
 		HeadIndexConfig config;
 
