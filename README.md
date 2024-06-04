@@ -20,8 +20,8 @@ Head Index also supports setting an item or economy (Common Economy API) cost fo
 ```json5
 {
   "permissionLevel": 2, // The default permission level for the commands. Set to 0 to allow all players access
-  "economyType": "FREE", // The type of economy to use. Set to FREE to disable economy, ITEM to use an item, or ECONOMY to use an economy currency
-  "costType": "minecraft:diamond", // The identifier for the item or currency to use for the cost
+  "economyType": "FREE", // The type of economy to use. Set to FREE to disable economy, ITEM to use an item, TAG to use a tag, or ECONOMY to use an economy currency
+  "costType": "minecraft:diamond", // The identifier for the item, tag or currency to use for the cost
   "costAmount": 1 // The amount of the item or currency to use for the cost
 }
 ```
