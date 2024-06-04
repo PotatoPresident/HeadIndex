@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +20,7 @@ import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 
 public class HeadIndex implements ModInitializer {
@@ -39,22 +39,27 @@ public class HeadIndex implements ModInitializer {
         config = HeadIndexConfig.loadConfig(new File(FabricLoader.getInstance().getConfigDir() + "/head-index.json"));
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public static void tryPurchase(ServerPlayerEntity player, int amount, Runnable onPurchase) {
         var trueAmount = amount * HeadIndex.config.costAmount;
 
         switch (HeadIndex.config.economyType) {
             case FREE -> onPurchase.run();
             case TAG -> {
-                ItemStack stack = Items.PLAYER_HEAD.getDefaultStack();
+                var stack = new HashSet<ItemVariant>();
                 for (int i = 0; i < player.getInventory().size(); i++) {
                     ItemStack slotStack = player.getInventory().getStack(i);
-                    if (slotStack.isIn(HeadIndex.config.getCostTag()) && slotStack.getCount() >= amount) {
-                        stack = slotStack;
+                    if (slotStack.isIn(HeadIndex.config.getCostTag())) {
+                        stack.add(ItemVariant.of(slotStack));
                     }
                 }
                 try (Transaction transaction = Transaction.openOuter()) {
-                    long extracted = PlayerInventoryStorage.of(player).extract(ItemVariant.of(stack), trueAmount, transaction);
+                    long extracted = 0;
+                    for (ItemVariant item : stack) {
+                        extracted += PlayerInventoryStorage.of(player).extract(item, trueAmount - extracted, transaction);
+                        if (extracted >= trueAmount) {
+                            break;
+                        }
+                    }
                     if (extracted == trueAmount) {
                         transaction.commit();
                         onPurchase.run();
