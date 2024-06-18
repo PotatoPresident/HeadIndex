@@ -27,7 +27,7 @@ public class HeadIndexConfig {
 	public int permissionLevel = 2;
 
 	public EconomyType economyType = EconomyType.FREE;
-	public Identifier costType = new Identifier("minecraft", "diamond");
+	public Identifier costType = Identifier.of("minecraft", "diamond");
 	public int costAmount = 1;
 
 	public Text getCost(MinecraftServer server) {
