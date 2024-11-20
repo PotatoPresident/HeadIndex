@@ -19,8 +19,8 @@ public class MenuCommand implements BuildableCommand {
                 .build();
     }
 
-    public static int openMenu(CommandContext<ServerCommandSource> context) {
-        new HeadGui(context.getSource().getPlayer()).open();
+    public static int openMenu(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        new HeadGui(context.getSource().getPlayerOrThrow()).open();
 
         return 1;
     }

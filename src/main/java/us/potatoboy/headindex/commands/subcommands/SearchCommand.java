@@ -21,8 +21,8 @@ public class SearchCommand implements BuildableCommand {
                 .build();
     }
 
-    public static int openSearch(CommandContext<ServerCommandSource> context) {
-        new HeadGui(context.getSource().getPlayer()).openSearch(StringArgumentType.getString(context, "term"));
+    public static int openSearch(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        new HeadGui(context.getSource().getPlayerOrThrow()).openSearch(StringArgumentType.getString(context, "term"));
 
         return 1;
     }

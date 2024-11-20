@@ -7,6 +7,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.commands.subcommands.MenuCommand;
+import us.potatoboy.headindex.commands.subcommands.PlayerCommand;
 import us.potatoboy.headindex.commands.subcommands.SearchCommand;
 
 public class HeadCommand {
@@ -21,5 +22,6 @@ public class HeadCommand {
 
         root.addChild(new MenuCommand().build());
         root.addChild(new SearchCommand().build());
+        root.addChild(new PlayerCommand().build());
     }
 }
