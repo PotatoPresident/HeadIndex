@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.8.+'
+    id 'fabric-loom' version '1.10.+'
     id 'maven-publish'
 }
 
@@ -25,8 +25,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation include("me.lucko:fabric-permissions-api:0.3.3")
-    modImplementation include("eu.pb4:sgui:1.7.2+1.21.2")
-    modImplementation include("xyz.nucleoid:server-translations-api:2.4.0+1.21.2-rc1")
+    modImplementation include("eu.pb4:sgui:1.9.0+1.21.5")
+    modImplementation include("xyz.nucleoid:server-translations-api:2.5.0+1.21.5-rc1")
     modImplementation include("eu.pb4:common-economy-api:1.1.1")
 }
 
