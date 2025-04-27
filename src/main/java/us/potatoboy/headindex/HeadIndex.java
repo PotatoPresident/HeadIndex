@@ -85,6 +85,20 @@ public class HeadIndex implements ModInitializer {
                     }
                 }
             }
+            case LEVEL -> {
+                // Cost in experience levels
+                if (player.experienceLevel >= trueAmount) {
+                    player.addExperienceLevels(-trueAmount);
+                    onPurchase.run();
+                }
+            }
+            case LEVELPOINTS -> {
+                // Cost in raw experience points
+                if (player.totalExperience >= trueAmount) {
+                    player.addExperience(-trueAmount);
+                    onPurchase.run();
+                }
+            }
         }
     }
 }
