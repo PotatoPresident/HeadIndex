@@ -76,7 +76,7 @@ public class HeadIndex implements ModInitializer {
                 }
             }
             case ECONOMY -> {
-                var account = CommonEconomy.getAccounts(player, HeadIndex.config.getCostCurrency(player.server)).stream().min(Comparator.comparing(x -> -x.balance())).orElse(null);
+                var account = CommonEconomy.getAccounts(player, HeadIndex.config.getCostCurrency(player.getServer())).stream().min(Comparator.comparing(x -> -x.balance())).orElse(null);
 
                 if (account != null) {
                     var transaction = account.decreaseBalance(trueAmount);
