@@ -140,7 +140,7 @@ public class HeadGui extends SimpleGui {
                 apiDebounce = 0;
 
                 CompletableFuture.runAsync(() -> {
-                    MinecraftServer server = player.server;
+                    MinecraftServer server = player.getServer();
 
                     Optional<GameProfile> possibleProfile = server.getUserCache().findByName(this.getInput());
                     MinecraftSessionService sessionService = server.getSessionService();
@@ -161,7 +161,7 @@ public class HeadGui extends SimpleGui {
                     var builder = GuiElementBuilder.from(outputStack);
                     if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
                         builder.addLoreLine(Text.empty());
-                        builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().server)).styled(style -> style.withColor(Formatting.RED)));
+                        builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().getServer())).styled(style -> style.withColor(Formatting.RED)));
                     }
 
                     this.setSlot(2, builder.asStack(), (index, type, action, gui) ->

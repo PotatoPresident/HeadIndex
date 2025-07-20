@@ -102,7 +102,7 @@ public class PagedHeadsGui extends LayeredGui {
 				var builder = GuiElementBuilder.from(head.createStack());
 				if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
                     builder.addLoreLine(Text.empty());
-					builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().server)).styled(style -> style.withColor(Formatting.RED)));
+					builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().getServer())).styled(style -> style.withColor(Formatting.RED)));
 				}
 
                 contentLayer.setSlot(i, builder.asStack(), (index, type, action) -> processHeadClick(head, type));
