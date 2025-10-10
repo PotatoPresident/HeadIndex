@@ -15,5 +15,8 @@
   "text.headindex.search": "Search",
   "text.headindex.search.output": "Search: %s",
   "text.headindex.playername": "Playername",
-  "text.headindex.price": "Price: %s"
+  "text.headindex.price": "Price: %s",
+
+  "text.headindex.xp.points": "%s XP",
+  "text.headindex.xp.levels": "%s XP Levels"
 }

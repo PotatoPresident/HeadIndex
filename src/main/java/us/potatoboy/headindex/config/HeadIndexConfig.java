@@ -58,10 +58,10 @@ public class HeadIndexConfig {
 						.formatValueText(costAmount, false);
 			case LEVEL:
 				// Cost in experience levels
-				return Text.of(costAmount + " Levels");
+				return Text.translatable("text.headindex.xp.levels", costAmount);
 			case LEVELPOINTS:
 				// Cost in raw XP points
-				return Text.of(costAmount + " XP");
+				return Text.translatable("text.headindex.xp.points", costAmount);
 			case FREE:
 			default:
 				return Text.empty();
