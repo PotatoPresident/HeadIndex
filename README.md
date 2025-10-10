@@ -5,6 +5,8 @@ Unlike a plugin, Head Index can also be used in singleplayer without the need fo
 New heads are added all the time and will be automatically added whenever you restart the server without needing to update. 
 Head Index also supports setting an item or economy (Common Economy API) cost for survival servers.
 
+Head index now also supports using level points or whole levels as a currency.
+
 
 # Usage
 ### Commands
@@ -20,9 +22,9 @@ Head Index also supports setting an item or economy (Common Economy API) cost fo
 ```json5
 {
   "permissionLevel": 2, // The default permission level for the commands. Set to 0 to allow all players access
-  "economyType": "FREE", // The type of economy to use. Set to FREE to disable economy, ITEM to use an item, TAG to use a tag, or ECONOMY to use an economy currency
-  "costType": "minecraft:diamond", // The identifier for the item, tag or currency to use for the cost
-  "costAmount": 1 // The amount of the item or currency to use for the cost
+  "economyType": "FREE", // The type of economy to use. Set to FREE to disable economy, ITEM to use an item, TAG to use a tag, ECONOMY to use an economy currency, LEVEL to use minecraft levels, or LEVELPOINTS to use level points
+  "costType": "minecraft:diamond", // The identifier for the item, tag or currency to use for the cost, only needed if economyType is set to ITEM, TAG, or ECONOMY
+  "costAmount": 1 // The amount of the item, currency or level to use for the cost
 }
 ```
 
