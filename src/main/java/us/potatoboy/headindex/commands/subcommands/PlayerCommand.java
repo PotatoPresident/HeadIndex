@@ -29,15 +29,15 @@ public class PlayerCommand implements BuildableCommand {
             throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
         }
         var profile = profiles.iterator().next();
-        var sessionService = context.getSource().getServer().getSessionService();
-        var result = sessionService.fetchProfile(profile.getId(), false);
+        var sessionService = context.getSource().getServer().getApiServices().sessionService();
+        var result = sessionService.fetchProfile(profile.id(), false);
 
         if (result == null) {
             throw GameProfileArgumentType.UNKNOWN_PLAYER_EXCEPTION.create();
         }
 
         var stack = Items.PLAYER_HEAD.getDefaultStack();
-        stack.set(DataComponentTypes.PROFILE, new ProfileComponent(result.profile()));
+        stack.set(DataComponentTypes.PROFILE, ProfileComponent.ofStatic(result.profile()));
         context.getSource().getPlayerOrThrow().getInventory().offerOrDrop(stack);
         return 1;
     }

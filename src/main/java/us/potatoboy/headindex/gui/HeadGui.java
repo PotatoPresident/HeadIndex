@@ -3,6 +3,7 @@ package us.potatoboy.headindex.gui;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import com.mojang.authlib.yggdrasil.response.NameAndId;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -140,28 +141,28 @@ public class HeadGui extends SimpleGui {
                 apiDebounce = 0;
 
                 CompletableFuture.runAsync(() -> {
-                    MinecraftServer server = player.getServer();
+                    MinecraftServer server = player.getEntityWorld().getServer();
 
-                    Optional<GameProfile> possibleProfile = server.getUserCache().findByName(this.getInput());
-                    MinecraftSessionService sessionService = server.getSessionService();
+                    Optional<NameAndId> possibleProfile = server.getApiServices().profileRepository().findProfileByName(this.getInput());
+                    MinecraftSessionService sessionService = server.getApiServices().sessionService();
 
                     if (possibleProfile.isEmpty()) {
                         outputStack.remove(DataComponentTypes.PROFILE);
                         return;
                     }
 
-                    ProfileResult profileResult = sessionService.fetchProfile(possibleProfile.get().getId(), false);
+                    ProfileResult profileResult = sessionService.fetchProfile(possibleProfile.get().id(), false);
                     if (profileResult == null) {
                         outputStack.remove(DataComponentTypes.PROFILE);
                     } else {
                         GameProfile profile = profileResult.profile();
-                        outputStack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
+                        outputStack.set(DataComponentTypes.PROFILE, ProfileComponent.ofStatic(profile));
                     }
 
                     var builder = GuiElementBuilder.from(outputStack);
                     if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
                         builder.addLoreLine(Text.empty());
-                        builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().getServer())).styled(style -> style.withColor(Formatting.RED)));
+                        builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(server)).styled(style -> style.withColor(Formatting.RED)));
                     }
 
                     this.setSlot(2, builder.asStack(), (index, type, action, gui) ->

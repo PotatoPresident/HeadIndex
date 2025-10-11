@@ -13,7 +13,7 @@ import us.potatoboy.headindex.HeadIndex;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +31,7 @@ public class HeadDatabaseAPI {
         for (Head.Category category : Head.Category.values()) {
             try {
                 HeadIndex.LOGGER.info("Saving {} heads to cache", category.name);
-                URLConnection connection = new URL(String.format(apiUrl, category.name)).openConnection();
+                URLConnection connection = URI.create(String.format(apiUrl, category.name)).toURL().openConnection();
 
                 var stream = new BufferedInputStream(connection.getInputStream());
                 FileUtils.copyInputStreamToFile(stream, cachePath.resolve(category.name + ".json").toFile());

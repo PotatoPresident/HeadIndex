@@ -1,7 +1,9 @@
 package us.potatoboy.headindex.api;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.ProfileComponent;
@@ -50,9 +52,9 @@ public class Head {
             stack.set(DataComponentTypes.LORE, new LoreComponent(List.of(Text.literal(tags))));
         }
 
-        var profile = new GameProfile(uuid, "");
-        profile.getProperties().put("textures", new Property("textures", value));
-        stack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
+        var props = new PropertyMap(ImmutableMultimap.of("textures", new Property("textures", value, null)));
+        var profile = new GameProfile(uuid, "", props);
+        stack.set(DataComponentTypes.PROFILE, ProfileComponent.ofStatic(profile));
 
         return stack;
     }
