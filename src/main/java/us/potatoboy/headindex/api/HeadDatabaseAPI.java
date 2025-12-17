@@ -159,6 +159,7 @@ public class HeadDatabaseAPI {
             connection.setRequestProperty("api-key", HeadIndex.config.license);
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
+            HeadIndex.LOGGER.info("Fetching: {}", urlString);
             try (InputStreamReader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
                 var response = JsonParser.parseReader(reader).getAsJsonObject();
                 if (response.has("warnings")) {

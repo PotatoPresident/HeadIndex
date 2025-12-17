@@ -5,13 +5,13 @@ import com.google.gson.annotations.SerializedName;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.NotNull;
 import us.potatoboy.headindex.HeadIndex;
 
@@ -49,25 +49,25 @@ public class Head implements Comparable<Head> {
         return tags.stream().map(HeadIndex.HEAD_DATABASE::getTagName).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public ItemStack createStack(Text displayName) {
+    public ItemStack createStack(Component displayName) {
         ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
         if (displayName != null) {
-            stack.set(DataComponentTypes.CUSTOM_NAME, displayName);
+            stack.set(DataComponents.CUSTOM_NAME, displayName);
         }
 
         if (tags != null && !tags.isEmpty()) {
-            stack.set(DataComponentTypes.LORE, new LoreComponent(getTags().stream().map(Text::literal).collect(Collectors.toUnmodifiableList())));
+            stack.set(DataComponents.LORE, new ItemLore(getTags().stream().map(Component::literal).collect(Collectors.toUnmodifiableList())));
         }
 
         var props = new PropertyMap(ImmutableMultimap.of("textures", new Property("textures", value, null)));
         var profile = new GameProfile(getUuid(), "", props);
-        stack.set(DataComponentTypes.PROFILE, ProfileComponent.ofStatic(profile));
+        stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile));
 
         return stack;
     }
 
     public ItemStack createStack() {
-        return createStack(Text.literal(name).setStyle(Style.EMPTY.withItalic(false)));
+        return createStack(Component.literal(name).setStyle(Style.EMPTY.withItalic(false)));
     }
 
     @Override

@@ -23,7 +23,7 @@ public class MenuCommand implements BuildableCommand {
         new HeadGui(context.getSource().getPlayerOrException()).open();
         
         if (HeadIndex.config.demoMode()) {
-            context.getSource().sendError(HeadIndex.licenseWarn());
+            context.getSource().sendSystemMessage(HeadIndex.licenseWarn());
         }
 
         return 1;

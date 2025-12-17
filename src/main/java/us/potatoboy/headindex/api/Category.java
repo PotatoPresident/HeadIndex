@@ -1,8 +1,8 @@
 package us.potatoboy.headindex.api;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class Category implements Comparable<Category> {
@@ -16,8 +16,8 @@ public class Category implements Comparable<Category> {
         return name.toLowerCase().replaceAll("[^a-z0-9]", "_");
     }
 
-    public MutableText getDisplayName() {
-        return Text.literal(name);
+    public MutableComponent getDisplayName() {
+        return Component.literal(name);
     }
 
     @Override

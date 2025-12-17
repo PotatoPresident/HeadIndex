@@ -7,11 +7,12 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import us.potatoboy.headindex.api.Category;
@@ -105,10 +106,10 @@ public class HeadIndex implements ModInitializer {
         }
     }
     
-    public static Text licenseWarn() {
+    public static Component licenseWarn() {
         try {
-            return Text.translatable("text.headindex.config.license",  Text.literal("https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users").setStyle(
-                    Style.EMPTY.withColor(Formatting.BLUE).withClickEvent(new ClickEvent.OpenUrl(new URI("https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users")))
+            return Component.translatable("text.headindex.config.license",  Component.literal("https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users").setStyle(
+                    Style.EMPTY.withColor(ChatFormatting.BLUE).withClickEvent(new ClickEvent.OpenUrl(new URI("https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users")))
             ));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
