@@ -19,10 +19,11 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import us.potatoboy.headindex.HeadIndex;
-import us.potatoboy.headindex.api.Head;
+import us.potatoboy.headindex.api.Category;
 import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -36,7 +37,8 @@ public class HeadGui extends SimpleGui {
         this.player = player;
 
         int index = 0;
-        for (Head.Category category : Head.Category.values()) {
+        var categories = HeadIndex.heads.keySet().stream().sorted().toList();
+        for (Category category : categories) {
             addCategoryButton(index, category);
             ++index;
         }
@@ -64,8 +66,11 @@ public class HeadGui extends SimpleGui {
         }
     }
 
-    private void addCategoryButton(int index, Head.Category category) {
-        this.setSlot(index, category.createStack(), (i, type, action, gui) -> {
+    private void addCategoryButton(int index, Category category) {
+        var icon = HeadIndex.heads.get(category).getFirst().createStack(category.getDisplayName());
+        icon.remove(DataComponentTypes.LORE);
+        
+        this.setSlot(index, icon, (i, type, action, gui) -> {
             this.close();
             var headsGui = new PagedHeadsGui(this, new ArrayList<>(HeadIndex.heads.get(category)));
             headsGui.setTitle(category.getDisplayName());
@@ -75,8 +80,9 @@ public class HeadGui extends SimpleGui {
 
     public void openSearch(String search) {
         this.close();
-        var heads = HeadIndex.heads.values().stream()
-                .filter(head -> head.name.toLowerCase().contains(search.toLowerCase()) || head.getTagsOrEmpty().toLowerCase().contains(search.toLowerCase()))
+        var heads = HeadIndex.heads.values().stream().flatMap(Collection::stream)
+                .filter(head -> head.name.toLowerCase().contains(search.toLowerCase()) || head.getTags().stream()
+                        .anyMatch(name -> name.toLowerCase().contains(search.toLowerCase())))
                 .collect(Collectors.toList());
 
         var headsGui = new PagedHeadsGui(this, heads);
