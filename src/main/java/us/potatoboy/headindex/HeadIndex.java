@@ -1,7 +1,5 @@
 package us.potatoboy.headindex;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import eu.pb4.common.economy.api.CommonEconomy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -11,16 +9,22 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.potatoboy.headindex.api.Category;
 import us.potatoboy.headindex.api.Head;
 import us.potatoboy.headindex.api.HeadDatabaseAPI;
 import us.potatoboy.headindex.commands.HeadCommand;
 import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.io.File;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class HeadIndex implements ModInitializer {
@@ -28,15 +32,15 @@ public class HeadIndex implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
     public static HeadIndexConfig config;
     public static final HeadDatabaseAPI HEAD_DATABASE = new HeadDatabaseAPI();
-    public static Multimap<Head.Category, Head> heads = HashMultimap.create();
+    public static Map<Category, List<Head>> heads = new HashMap<>();
 
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> new HeadCommand(dispatcher));
-
-        CompletableFuture.runAsync(() -> heads = HEAD_DATABASE.getHeads());
-
+        
         config = HeadIndexConfig.loadConfig(new File(FabricLoader.getInstance().getConfigDir() + "/head-index.json"));
+        
+        CompletableFuture.runAsync(() -> heads = HEAD_DATABASE.getHeads());
     }
 
     public static void tryPurchase(ServerPlayerEntity player, int amount, Runnable onPurchase) {
@@ -99,6 +103,16 @@ public class HeadIndex implements ModInitializer {
                     onPurchase.run();
                 }
             }
+        }
+    }
+    
+    public static Text licenseWarn() {
+        try {
+            return Text.translatable("text.headindex.config.license",  Text.literal("https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users").setStyle(
+                    Style.EMPTY.withColor(Formatting.BLUE).withClickEvent(new ClickEvent.OpenUrl(new URI("https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users")))
+            ));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }
