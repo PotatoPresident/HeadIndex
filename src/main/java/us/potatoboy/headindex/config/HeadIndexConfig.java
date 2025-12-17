@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class HeadIndexConfig {
 	private static final Gson GSON = new GsonBuilder()
@@ -27,17 +28,20 @@ public class HeadIndexConfig {
 		LEVEL,
 		LEVELPOINTS
 	}
+    
+    private final String _licenseComment = "Enter your license key below. Register here: https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users";
+    public String license = "LICENSE_HERE";
 
-	// Permission level required to use the feature
+    private final String _permissionComment = "The default permission level for the commands. Set to 0 to allow all players access";
 	public int permissionLevel = 2;
 
-	// Type of economy to use
+    private final String _economyComment = "The type of economy to use. Set to FREE to disable economy, ITEM to use an item, TAG to use a tag, ECONOMY to use an economy currency, LEVEL to use minecraft levels, or LEVELPOINTS to use level points";
 	public EconomyType economyType = EconomyType.FREE;
 
-	// If using ITEM or TAG or ECONOMY, this identifies the currency/item/tag
-	public Identifier costType = Identifier.fromNamespaceAndPath("minecraft", "diamond");
+    private final String _costComment = "The identifier for the item, tag or currency to use for the cost, only needed if economyType is set to ITEM, TAG, or ECONOMY";
+    public Identifier costType = Identifier.fromNamespaceAndPath("minecraft", "diamond");
 
-	// Amount of the cost
+    private final String _costAmountComment = "The amount of the item, currency or level to use for the cost";
 	public int costAmount = 1;
 
 	/**
@@ -81,9 +85,14 @@ public class HeadIndexConfig {
 	public TagKey<Item> getCostTag() {
 		return TagKey.create(BuiltInRegistries.ITEM.key(), costType);
 	}
+    
+    /** Use demo mode if the license has not been set */
+    public boolean demoMode() {
+        return Objects.equals(license, "LICENSE_HERE");
+    }
 
 	/**
-	 * Loads the configuration from the given file, or creates a default if missing.
+	 * Loads the configuration from the given file or creates a default if missing.
 	 */
 	public static HeadIndexConfig loadConfig(File file) {
 		HeadIndexConfig config;
