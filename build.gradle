@@ -24,10 +24,10 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation include("me.lucko:fabric-permissions-api:0.4.1")
+    modImplementation include("me.lucko:fabric-permissions-api:0.6.1")
     modImplementation include("eu.pb4:sgui:1.11.0+1.21.9")
     modImplementation include("xyz.nucleoid:server-translations-api:2.5.2+1.21.9-pre3")
-    modImplementation include("eu.pb4:common-economy-api:1.1.1")
+    modImplementation include("eu.pb4:common-economy-api:1.2.0")
 }
 
 processResources {
