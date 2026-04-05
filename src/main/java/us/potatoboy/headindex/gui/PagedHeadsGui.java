@@ -2,43 +2,47 @@ package us.potatoboy.headindex.gui;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.GuiInterface;
+import eu.pb4.sgui.api.gui.SlotBasedGui;
 import eu.pb4.sgui.api.gui.layered.Layer;
 import eu.pb4.sgui.api.gui.layered.LayeredGui;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Head;
 import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class PagedHeadsGui extends LayeredGui {
     public final List<Head> heads;
     public int page = 0;
-    final GuiInterface parent;
+    final SlotBasedGui parent;
     final Layer contentLayer;
     final Layer navigationLayer;
 
-    private static final Style regular = Style.EMPTY.withItalic(false).withColor(Formatting.WHITE);
+    private static final Style regular = Style.EMPTY.withItalic(false).withColor(ChatFormatting.WHITE);
 
-    private static final ItemStack backwardArrow = new Head(
-            UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
-            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwODI5OGZmMmIyNjk1MWQ2ODNlNWFkZTQ2YTQyZTkwYzJmN2M3ZGQ0MWJhYTkwOGJjNTg1MmY4YzMyZTU4MyJ9fX0="
-    ).createStack(Text.translatable("spectatorMenu.previous_page").setStyle(regular));
+    private static ItemStack backwardArrow() {
+        return new Head(
+                UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwODI5OGZmMmIyNjk1MWQ2ODNlNWFkZTQ2YTQyZTkwYzJmN2M3ZGQ0MWJhYTkwOGJjNTg1MmY4YzMyZTU4MyJ9fX0="
+        ).createStack(Component.translatable("spectatorMenu.previous_page").setStyle(regular));
+    }
 
-    private static final ItemStack forwardArrow = new Head(
-            UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
-            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ=="
-    ).createStack(Text.translatable("spectatorMenu.next_page").setStyle(regular));
+    private static ItemStack forwardArrow() {
+        return new Head(
+                UUID.fromString("8aa062dc-9852-42b1-ae37-b2f8a3121c0e"),
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ=="
+        ).createStack(Component.translatable("spectatorMenu.next_page").setStyle(regular));
+    }
 
-    public PagedHeadsGui(GuiInterface parent, List<Head> heads) {
-        super(ScreenHandlerType.GENERIC_9X6, parent.getPlayer(), false);
+    public PagedHeadsGui(SlotBasedGui parent, List<Head> heads) {
+        super(MenuType.GENERIC_9x6, parent.getPlayer(), false);
 
         this.heads = heads;
         this.parent = parent;
@@ -50,8 +54,8 @@ public class PagedHeadsGui extends LayeredGui {
         Layer navigation = new Layer(1, 9);
         this.navigationLayer = navigation;
         navigation.setSlot(0, new GuiElementBuilder(Items.BARRIER)
-                .setName(Text.translatable("text.headindex.back"))
-                .setCallback((index, type, action) -> this.close())
+                .setName(Component.translatable("text.headindex.back"))
+                .setCallback((index, type, action, gui) -> this.close())
         );
         updateNavigation();
         this.addLayer(navigationLayer, 0, 5);
@@ -64,9 +68,9 @@ public class PagedHeadsGui extends LayeredGui {
     private void updateNavigation() {
         navigationLayer.setSlot(
                 3, GuiElementBuilder
-                        .from(this.page != 0 ? backwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
-                        .setName(Text.translatable("spectatorMenu.previous_page").setStyle(regular))
-                        .setCallback((index, type, action) -> {
+                        .from(this.page != 0 ? backwardArrow() : Items.BLACK_STAINED_GLASS_PANE.getDefaultInstance())
+                        .setName(Component.translatable("spectatorMenu.previous_page").setStyle(regular))
+                        .setCallback((index, type, action, gui) -> {
                             this.page -= 1;
                             if (this.page < 0) {
                                 this.page = 0;
@@ -78,9 +82,9 @@ public class PagedHeadsGui extends LayeredGui {
 
         navigationLayer.setSlot(
                 5, GuiElementBuilder
-                        .from(this.page + 1 < getMaxPage() ? forwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultStack())
-                        .setName(Text.translatable("spectatorMenu.next_page").setStyle(regular))
-                        .setCallback((index, type, action) -> {
+                        .from(this.page + 1 < getMaxPage() ? forwardArrow() : Items.BLACK_STAINED_GLASS_PANE.getDefaultInstance())
+                        .setName(Component.translatable("spectatorMenu.next_page").setStyle(regular))
+                        .setCallback((index, type, action, gui) -> {
                             this.page += 1;
                             if (this.page >= getMaxPage()) {
                                 this.page = getMaxPage() - 1;
@@ -91,7 +95,7 @@ public class PagedHeadsGui extends LayeredGui {
         );
 
         navigationLayer.setSlot(4, new GuiElementBuilder(Items.PAPER)
-                .setName(Text.literal(this.page + 1 + " / " + this.getMaxPage()).setStyle(regular))
+                .setName(Component.literal(this.page + 1 + " / " + this.getMaxPage()).setStyle(regular))
         );
     }
 
@@ -101,13 +105,13 @@ public class PagedHeadsGui extends LayeredGui {
                 Head head = heads.get(i + (this.page * 45));
 				var builder = GuiElementBuilder.from(head.createStack());
 				if (HeadIndex.config.economyType != HeadIndexConfig.EconomyType.FREE) {
-                    builder.addLoreLine(Text.empty());
-					builder.addLoreLine(Text.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().getEntityWorld().getServer())).styled(style -> style.withColor(Formatting.RED)));
+                    builder.addLoreLine(Component.empty());
+					builder.addLoreLine(Component.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().level().getServer())).withStyle(style -> style.withColor(ChatFormatting.RED)));
 				}
 
-                contentLayer.setSlot(i, builder.asStack(), (index, type, action) -> processHeadClick(head, type));
+                contentLayer.setSlot(i, builder.asStack(), (index, type, action, g) -> processHeadClick(head, type));
             } else {
-                contentLayer.setSlot(i, Items.AIR.getDefaultStack());
+                contentLayer.setSlot(i, Items.AIR.getDefaultInstance());
             }
         }
     }
@@ -120,41 +124,41 @@ public class PagedHeadsGui extends LayeredGui {
     private void processHeadClick(Head head, ClickType type) {
         var player = getPlayer();
 
-        ItemStack cursorStack = getPlayer().currentScreenHandler.getCursorStack();
+        ItemStack cursorStack = getPlayer().containerMenu.getCarried();
         ItemStack headStack = head.createStack();
 
         if (cursorStack.isEmpty()) {
             if (type.shift) {
-                HeadIndex.tryPurchase(player, 1, () -> player.getInventory().insertStack(headStack));
+                HeadIndex.tryPurchase(player, 1, () -> player.getInventory().add(headStack));
             } else if (type.isMiddle) {
-				HeadIndex.tryPurchase(player, headStack.getMaxCount(), () -> {
-					headStack.setCount(headStack.getMaxCount());
-					player.currentScreenHandler.setCursorStack(headStack);
+				HeadIndex.tryPurchase(player, headStack.getMaxStackSize(), () -> {
+					headStack.setCount(headStack.getMaxStackSize());
+					player.containerMenu.setCarried(headStack);
 				});
             } else {
-				HeadIndex.tryPurchase(player, 1, () -> player.currentScreenHandler.setCursorStack(headStack));
+				HeadIndex.tryPurchase(player, 1, () -> player.containerMenu.setCarried(headStack));
             }
-        } else if (cursorStack.getMaxCount() <= cursorStack.getCount()) {
+        } else if (cursorStack.getMaxStackSize() <= cursorStack.getCount()) {
 			return;
-		} else if (ItemStack.areItemsEqual(headStack, cursorStack)) {
+		} else if (ItemStack.isSameItem(headStack, cursorStack)) {
             if (type.isLeft) {
-				HeadIndex.tryPurchase(player, 1, () -> cursorStack.increment(1));
+				HeadIndex.tryPurchase(player, 1, () -> cursorStack.grow(1));
             } else if (type.isRight) {
-				if (HeadIndex.config.economyType == HeadIndexConfig.EconomyType.FREE) cursorStack.decrement(1);
+				if (HeadIndex.config.economyType == HeadIndexConfig.EconomyType.FREE) cursorStack.shrink(1);
             } else if (type.isMiddle) {
-				var amount = headStack.getMaxCount() - cursorStack.getCount();
+				var amount = headStack.getMaxStackSize() - cursorStack.getCount();
 				HeadIndex.tryPurchase(player, amount, () -> {
-					headStack.setCount(headStack.getMaxCount());
-					player.currentScreenHandler.setCursorStack(headStack);
+					headStack.setCount(headStack.getMaxStackSize());
+					player.containerMenu.setCarried(headStack);
 				});
             }
         } else {
-			if (HeadIndex.config.economyType == HeadIndexConfig.EconomyType.FREE) player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
+			if (HeadIndex.config.economyType == HeadIndexConfig.EconomyType.FREE) player.containerMenu.setCarried(ItemStack.EMPTY);
         }
     }
 
     @Override
-    public void onClose() {
+    public void onPlayerClose(boolean success) {
         parent.open();
     }
 }

@@ -9,8 +9,8 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import us.potatoboy.headindex.api.Head;
@@ -39,16 +39,16 @@ public class HeadIndex implements ModInitializer {
         config = HeadIndexConfig.loadConfig(new File(FabricLoader.getInstance().getConfigDir() + "/head-index.json"));
     }
 
-    public static void tryPurchase(ServerPlayerEntity player, int amount, Runnable onPurchase) {
+    public static void tryPurchase(ServerPlayer player, int amount, Runnable onPurchase) {
         var trueAmount = amount * HeadIndex.config.costAmount;
 
         switch (HeadIndex.config.economyType) {
             case FREE -> onPurchase.run();
             case TAG -> {
                 var stack = new HashSet<ItemVariant>();
-                for (int i = 0; i < player.getInventory().size(); i++) {
-                    ItemStack slotStack = player.getInventory().getStack(i);
-                    if (slotStack.isIn(HeadIndex.config.getCostTag())) {
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack slotStack = player.getInventory().getItem(i);
+                    if (slotStack.is(HeadIndex.config.getCostTag())) {
                         stack.add(ItemVariant.of(slotStack));
                     }
                 }
@@ -76,7 +76,7 @@ public class HeadIndex implements ModInitializer {
                 }
             }
             case ECONOMY -> {
-                var account = CommonEconomy.getAccounts(player, HeadIndex.config.getCostCurrency(player.getEntityWorld().getServer())).stream().min(Comparator.comparing(x -> -x.balance())).orElse(null);
+                var account = CommonEconomy.getAccounts(player, HeadIndex.config.getCostCurrency(player.level().getServer())).stream().min(Comparator.comparing(x -> x.balance().negate())).orElse(null);
 
                 if (account != null) {
                     var transaction = account.decreaseBalance(trueAmount);
@@ -88,14 +88,14 @@ public class HeadIndex implements ModInitializer {
             case LEVEL -> {
                 // Cost in experience levels
                 if (player.experienceLevel >= trueAmount) {
-                    player.addExperienceLevels(-trueAmount);
+                    player.giveExperienceLevels(-trueAmount);
                     onPurchase.run();
                 }
             }
             case LEVELPOINTS -> {
                 // Cost in raw experience points
                 if (player.totalExperience >= trueAmount) {
-                    player.addExperience(-trueAmount);
+                    player.giveExperiencePoints(-trueAmount);
                     onPurchase.run();
                 }
             }

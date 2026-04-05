@@ -3,13 +3,12 @@ package us.potatoboy.headindex.config;
 import com.google.gson.*;
 import eu.pb4.common.economy.api.CommonEconomy;
 import eu.pb4.common.economy.api.EconomyCurrency;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +35,7 @@ public class HeadIndexConfig {
 	public EconomyType economyType = EconomyType.FREE;
 
 	// If using ITEM or TAG or ECONOMY, this identifies the currency/item/tag
-	public Identifier costType = Identifier.of("minecraft", "diamond");
+	public Identifier costType = Identifier.fromNamespaceAndPath("minecraft", "diamond");
 
 	// Amount of the cost
 	public int costAmount = 1;
@@ -44,33 +43,33 @@ public class HeadIndexConfig {
 	/**
 	 * Returns a Text component describing the cost based on the economy type.
 	 */
-	public Text getCost(MinecraftServer server) {
+	public Component getCost(MinecraftServer server) {
 		switch (economyType) {
 			case TAG:
-				return Text.translatable(getCostTag().getTranslationKey())
-						.append(Text.of(" × " + costAmount));
+				return Component.translatable(getCostTag().getTranslationKey())
+						.append(Component.literal(" × " + costAmount));
 			case ITEM:
-				return Text.empty()
-						.append(getCostItem().getName())
-						.append(Text.of(" × " + costAmount));
+			return Component.empty()
+						.append(getCostItem().getDefaultInstance().getDisplayName())
+						.append(Component.literal(" × " + costAmount));
 			case ECONOMY:
 				return getCostCurrency(server)
-						.formatValueText(costAmount, false);
+						.formatValueComponent(costAmount, false);
 			case LEVEL:
 				// Cost in experience levels
-				return Text.translatable("text.headindex.xp.levels", costAmount);
+				return Component.translatable("text.headindex.xp.levels", costAmount);
 			case LEVELPOINTS:
 				// Cost in raw XP points
-				return Text.translatable("text.headindex.xp.points", costAmount);
+				return Component.translatable("text.headindex.xp.points", costAmount);
 			case FREE:
 			default:
-				return Text.empty();
+				return Component.empty();
 		}
 	}
 
 	/** Get the configured Item for ITEM cost type */
 	public Item getCostItem() {
-		return Registries.ITEM.get(costType);
+		return BuiltInRegistries.ITEM.getValue(costType);
 	}
 
 	/** Get the configured EconomyCurrency for ECONOMY cost type */
@@ -80,7 +79,7 @@ public class HeadIndexConfig {
 
 	/** Get the configured TagKey for TAG cost type */
 	public TagKey<Item> getCostTag() {
-		return TagKey.of(Registries.ITEM.getKey(), costType);
+		return TagKey.create(BuiltInRegistries.ITEM.key(), costType);
 	}
 
 	/**
