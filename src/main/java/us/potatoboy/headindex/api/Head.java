@@ -4,18 +4,18 @@ import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.ResolvableProfile;
 
 public class Head {
     public final String name;
@@ -42,25 +42,25 @@ public class Head {
         return tags == null ? "" : tags;
     }
 
-    public ItemStack createStack(Text displayName) {
+    public ItemStack createStack(Component displayName) {
         ItemStack stack = new ItemStack(Items.PLAYER_HEAD);
         if (displayName != null) {
-            stack.set(DataComponentTypes.CUSTOM_NAME, displayName);
+            stack.set(DataComponents.CUSTOM_NAME, displayName);
         }
 
         if (tags != null) {
-            stack.set(DataComponentTypes.LORE, new LoreComponent(List.of(Text.literal(tags))));
+            stack.set(DataComponents.LORE, new ItemLore(List.of(Component.literal(tags))));
         }
 
         var props = new PropertyMap(ImmutableMultimap.of("textures", new Property("textures", value, null)));
         var profile = new GameProfile(uuid, "", props);
-        stack.set(DataComponentTypes.PROFILE, ProfileComponent.ofStatic(profile));
+        stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile));
 
         return stack;
     }
 
     public ItemStack createStack() {
-        return createStack(name != null ? Text.literal(name).setStyle(Style.EMPTY.withItalic(false)) : null);
+        return createStack(name != null ? Component.literal(name).setStyle(Style.EMPTY.withItalic(false)) : null);
     }
 
     public enum Category {
@@ -131,14 +131,14 @@ public class Head {
         }
 
         public ItemStack createStack() {
-            icon.set(DataComponentTypes.CUSTOM_NAME, getDisplayName()
+            icon.set(DataComponents.CUSTOM_NAME, getDisplayName()
                             .setStyle(Style.EMPTY.withItalic(false))
             );
             return icon;
         }
 
-        public MutableText getDisplayName() {
-            return Text.translatable("text.headindex.category." + name);
+        public MutableComponent getDisplayName() {
+            return Component.translatable("text.headindex.category." + name);
         }
     }
 }
