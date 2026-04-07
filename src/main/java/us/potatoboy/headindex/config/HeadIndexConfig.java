@@ -50,11 +50,11 @@ public class HeadIndexConfig {
 						.append(Component.nullToEmpty(" × " + costAmount));
 			case ITEM:
 				return Component.empty()
-						.append(getCostItem().getName())
+						.append(getCostItem().getDefaultInstance().getItemName())
 						.append(Component.nullToEmpty(" × " + costAmount));
 			case ECONOMY:
 				return getCostCurrency(server)
-						.formatValueText(costAmount, false);
+						.formatValueComponent(costAmount, false);
 			case LEVEL:
 				// Cost in experience levels
 				return Component.translatable("text.headindex.xp.levels", costAmount);

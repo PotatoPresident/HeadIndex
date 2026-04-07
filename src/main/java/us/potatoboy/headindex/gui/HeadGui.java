@@ -47,7 +47,7 @@ public class HeadGui extends SimpleGui {
             this.setSlot(this.getSize() - 1, new GuiElementBuilder()
                     .setItem(Items.NAME_TAG)
                     .setName(Component.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
-                    .setCallback((index1, type1, action) -> {
+                    .setCallback((index1, type1, action, gui) -> {
                         this.close();
                         new SearchInputGui().open();
                     }));
@@ -57,7 +57,7 @@ public class HeadGui extends SimpleGui {
             this.setSlot(this.getSize() - 2, new GuiElementBuilder()
                     .setItem(Items.PLAYER_HEAD)
                     .setName(Component.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.WHITE)))
-                    .setCallback((index1, type1, action) -> {
+                    .setCallback((index1, type1, action, gui) -> {
                         this.close();
                         new PlayerInputGui().open();
                     }));
@@ -110,7 +110,7 @@ public class HeadGui extends SimpleGui {
         }
 
         @Override
-        public void onClose() {
+        public void onManualClose() {
             HeadGui.this.open();
         }
     }
@@ -189,7 +189,7 @@ public class HeadGui extends SimpleGui {
         }
 
         @Override
-        public void onClose() {
+        public void onManualClose() {
             HeadGui.this.open();
         }
     }

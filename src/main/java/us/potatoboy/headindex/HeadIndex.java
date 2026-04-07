@@ -3,8 +3,10 @@ package us.potatoboy.headindex;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import eu.pb4.common.economy.api.CommonEconomy;
+import java.math.BigInteger;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.PlayerInventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
@@ -34,7 +36,7 @@ public class HeadIndex implements ModInitializer {
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> new HeadCommand(dispatcher));
 
-        CompletableFuture.runAsync(() -> heads = HEAD_DATABASE.getHeads());
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> { CompletableFuture.runAsync(() -> {heads = HEAD_DATABASE.getHeads(); }); });
 
         config = HeadIndexConfig.loadConfig(new File(FabricLoader.getInstance().getConfigDir() + "/head-index.json"));
     }
@@ -76,7 +78,7 @@ public class HeadIndex implements ModInitializer {
                 }
             }
             case ECONOMY -> {
-                var account = CommonEconomy.getAccounts(player, HeadIndex.config.getCostCurrency(player.level().getServer())).stream().min(Comparator.comparing(x -> -x.balance())).orElse(null);
+                var account = CommonEconomy.getAccounts(player, HeadIndex.config.getCostCurrency(player.level().getServer())).stream().min(Comparator.comparing(x -> x.balance().negate())).orElse(null);
 
                 if (account != null) {
                     var transaction = account.decreaseBalance(trueAmount);

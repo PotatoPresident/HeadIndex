@@ -2,7 +2,7 @@ package us.potatoboy.headindex.gui;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
-import eu.pb4.sgui.api.gui.GuiInterface;
+import eu.pb4.sgui.api.gui.GuiLike;
 import eu.pb4.sgui.api.gui.layered.Layer;
 import eu.pb4.sgui.api.gui.layered.LayeredGui;
 import us.potatoboy.headindex.HeadIndex;
@@ -21,7 +21,7 @@ import net.minecraft.world.item.Items;
 public class PagedHeadsGui extends LayeredGui {
     public final List<Head> heads;
     public int page = 0;
-    final GuiInterface parent;
+    final GuiLike parent;
     final Layer contentLayer;
     final Layer navigationLayer;
 
@@ -37,7 +37,7 @@ public class PagedHeadsGui extends LayeredGui {
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ=="
     ).createStack(Component.translatable("spectatorMenu.next_page").setStyle(regular));
 
-    public PagedHeadsGui(GuiInterface parent, List<Head> heads) {
+    public PagedHeadsGui(GuiLike parent, List<Head> heads) {
         super(MenuType.GENERIC_9x6, parent.getPlayer(), false);
 
         this.heads = heads;
@@ -51,7 +51,7 @@ public class PagedHeadsGui extends LayeredGui {
         this.navigationLayer = navigation;
         navigation.setSlot(0, new GuiElementBuilder(Items.BARRIER)
                 .setName(Component.translatable("text.headindex.back"))
-                .setCallback((index, type, action) -> this.close())
+                .setCallback((index, type, action, gui) -> this.close())
         );
         updateNavigation();
         this.addLayer(navigationLayer, 0, 5);
@@ -66,7 +66,7 @@ public class PagedHeadsGui extends LayeredGui {
                 3, GuiElementBuilder
                         .from(this.page != 0 ? backwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultInstance())
                         .setName(Component.translatable("spectatorMenu.previous_page").setStyle(regular))
-                        .setCallback((index, type, action) -> {
+                        .setCallback((index, type, action, gui) -> {
                             this.page -= 1;
                             if (this.page < 0) {
                                 this.page = 0;
@@ -80,7 +80,7 @@ public class PagedHeadsGui extends LayeredGui {
                 5, GuiElementBuilder
                         .from(this.page + 1 < getMaxPage() ? forwardArrow : Items.BLACK_STAINED_GLASS_PANE.getDefaultInstance())
                         .setName(Component.translatable("spectatorMenu.next_page").setStyle(regular))
-                        .setCallback((index, type, action) -> {
+                        .setCallback((index, type, action, gui) -> {
                             this.page += 1;
                             if (this.page >= getMaxPage()) {
                                 this.page = getMaxPage() - 1;
@@ -105,7 +105,7 @@ public class PagedHeadsGui extends LayeredGui {
 					builder.addLoreLine(Component.translatable("text.headindex.price", HeadIndex.config.getCost(getPlayer().level().getServer())).withStyle(style -> style.withColor(ChatFormatting.RED)));
 				}
 
-                contentLayer.setSlot(i, builder.asStack(), (index, type, action) -> processHeadClick(head, type));
+                contentLayer.setSlot(i, builder.asStack(), (index, type, action, gui) -> processHeadClick(head, type));
             } else {
                 contentLayer.setSlot(i, Items.AIR.getDefaultInstance());
             }
@@ -154,7 +154,7 @@ public class PagedHeadsGui extends LayeredGui {
     }
 
     @Override
-    public void onClose() {
+    public void onManualClose() {
         parent.open();
     }
 }
