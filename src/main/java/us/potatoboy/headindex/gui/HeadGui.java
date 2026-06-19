@@ -109,10 +109,10 @@ public class HeadGui extends SimpleGui {
             this.setSlot(2, outputStack, (index, type, action, gui) -> openSearch(this.getInput()));
         }
 
-        @Override
-        public void onPlayerClose(boolean success) {
-            HeadGui.this.open();
-        }
+//        @Override
+//        public void onRemoved() {
+//            HeadGui.this.open();
+//        }
     }
 
     private class PlayerInputGui extends AnvilInputGui {
@@ -188,9 +188,9 @@ public class HeadGui extends SimpleGui {
             apiDebounce = System.currentTimeMillis() + 500;
         }
 
-        @Override
-        public void onPlayerClose(boolean success) {
-            HeadGui.this.open();
-        }
+//        @Override
+//        public void onRemoved() {
+//            HeadGui.this.open();
+//        }
     }
 }

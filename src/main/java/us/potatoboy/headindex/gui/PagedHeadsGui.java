@@ -157,8 +157,8 @@ public class PagedHeadsGui extends LayeredGui {
         }
     }
 
-    @Override
-    public void onPlayerClose(boolean success) {
-        parent.open();
-    }
+//    @Override
+//    public void onPlayerClose(boolean success) {
+//        parent.open();
+//    }
 }
