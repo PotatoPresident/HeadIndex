@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.14-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version '1.15.+'
     id 'maven-publish'
 }
 
@@ -18,16 +18,15 @@ repositories {
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation include("me.lucko:fabric-permissions-api:0.6.1")
-    modImplementation include("eu.pb4:sgui:1.11.0+1.21.9")
-    modImplementation include("xyz.nucleoid:server-translations-api:2.5.2+1.21.9-pre3")
-    modImplementation include("eu.pb4:common-economy-api:1.2.0")
+    implementation include("me.lucko:fabric-permissions-api:0.7.0")
+    implementation include("eu.pb4:sgui:2.0.0+26.1")
+    implementation include("xyz.nucleoid:server-translations-api:3.0.1+26.1")
+    implementation include("eu.pb4:common-economy-api:2.0.0")
 }
 
 processResources {
@@ -36,6 +35,11 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    it.options.release = 25
 }
 
 jar {

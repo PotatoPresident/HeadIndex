@@ -1,8 +1,8 @@
 package us.potatoboy.headindex;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 
 public interface BuildableCommand {
-    LiteralCommandNode<ServerCommandSource> build();
+    LiteralCommandNode<CommandSourceStack> build();
 }
