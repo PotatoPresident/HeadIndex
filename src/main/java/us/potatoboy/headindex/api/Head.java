@@ -38,7 +38,7 @@ public class Head implements Comparable<Head> {
         this.name = "";
         this.uuid = uuid;
         this.value = value;
-        this.tags =  new ArrayList<>();
+        this.tags = new ArrayList<>();
     }
 
     public UUID getUuid() {
@@ -46,6 +46,7 @@ public class Head implements Comparable<Head> {
     }
     
     public List<String> getTags() {
+        if (tags == null) return List.of();
         return tags.stream().map(HeadIndex.HEAD_DATABASE::getTagName).filter(Objects::nonNull).collect(Collectors.toList());
     }
 

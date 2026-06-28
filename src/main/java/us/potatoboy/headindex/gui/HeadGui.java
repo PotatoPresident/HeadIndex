@@ -67,7 +67,7 @@ public class HeadGui extends SimpleGui {
     }
 
     private void addCategoryButton(int index, Category category) {
-        var icon = HeadIndex.heads.get(category).getFirst().createStack(category.getDisplayName());
+        var icon = category.getCategoryIcon().createStack(category.getDisplayName());
         icon.remove(DataComponents.LORE);
         
         this.setSlot(index, icon, (i, type, action, gui) -> {

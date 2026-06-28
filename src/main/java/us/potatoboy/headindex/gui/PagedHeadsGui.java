@@ -10,7 +10,6 @@ import us.potatoboy.headindex.api.Head;
 import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.util.List;
-import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -55,7 +54,7 @@ public class PagedHeadsGui extends LayeredGui {
         this.navigationLayer = navigation;
         navigation.setSlot(0, new GuiElementBuilder(Items.BARRIER)
                 .setName(Component.translatable("text.headindex.back"))
-                .setCallback((index, type, action, gui) -> this.close())
+                .setCallback((index, type, action, gui) -> parent.open())
         );
         updateNavigation();
         this.addLayer(navigationLayer, 0, 5);

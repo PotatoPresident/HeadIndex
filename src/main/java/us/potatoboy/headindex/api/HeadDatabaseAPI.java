@@ -26,6 +26,9 @@ public class HeadDatabaseAPI {
     private final Map<Integer, String> tagCache = new HashMap<>();
     
     public Map<Category, List<Head>> getHeads() {
+        // Load previous cache while refetching
+        HeadIndex.heads = loadHeadsFromDisk();
+        
         try {
             updateTags();
             updateCategories();
