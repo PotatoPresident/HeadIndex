@@ -7,7 +7,6 @@ import com.mojang.authlib.yggdrasil.response.NameAndId;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -20,6 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Category;
+import us.potatoboy.headindex.commands.HIPermissions;
 import us.potatoboy.headindex.config.HeadIndexConfig;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class HeadGui extends SimpleGui {
 
         this.setTitle(Component.translatable("text.headindex.title"));
 
-        if (Permissions.check(player, "headindex.search", HeadIndex.config.permissionLevel)) {
+        if (HIPermissions.COMMAND_SEARCH.test(player.createCommandSourceStack())) {
             this.setSlot(this.getSize() - 1, new GuiElementBuilder()
                     .setItem(Items.NAME_TAG)
                     .setName(Component.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
@@ -55,7 +55,7 @@ public class HeadGui extends SimpleGui {
                     }));
         }
 
-        if (Permissions.check(player, "headindex.playername", HeadIndex.config.permissionLevel)) {
+        if (HIPermissions.COMMAND_PLAYER.test(player.createCommandSourceStack())) {
             this.setSlot(this.getSize() - 2, new GuiElementBuilder()
                     .setItem(Items.PLAYER_HEAD)
                     .setName(Component.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.WHITE)))

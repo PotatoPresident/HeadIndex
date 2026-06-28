@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import java.io.*;
@@ -84,6 +85,11 @@ public class HeadIndexConfig {
 	/** Get the configured TagKey for TAG cost type */
 	public TagKey<Item> getCostTag() {
 		return TagKey.create(BuiltInRegistries.ITEM.key(), costType);
+	}
+	
+	/** Get the configured PermissionLevel */
+	public PermissionLevel getPermissionLevel() {
+		return PermissionLevel.byId(permissionLevel);
 	}
     
     /** Use demo mode if the license has not been set */

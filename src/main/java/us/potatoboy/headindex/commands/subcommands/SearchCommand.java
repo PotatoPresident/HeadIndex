@@ -4,18 +4,17 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import us.potatoboy.headindex.BuildableCommand;
-import us.potatoboy.headindex.HeadIndex;
+import us.potatoboy.headindex.commands.HIPermissions;
 import us.potatoboy.headindex.gui.HeadGui;
 
 public class SearchCommand implements BuildableCommand {
     @Override
     public LiteralCommandNode<CommandSourceStack> build() {
         return Commands.literal("search")
-                .requires(Permissions.require("headindex.search", HeadIndex.config.permissionLevel))
+                .requires(HIPermissions.COMMAND_SEARCH)
                 .then(Commands.argument("term", StringArgumentType.word())
                         .executes(SearchCommand::openSearch))
                 .build();

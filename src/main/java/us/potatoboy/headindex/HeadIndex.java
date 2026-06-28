@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
@@ -114,5 +115,9 @@ public class HeadIndex implements ModInitializer {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(HeadIndex.MOD_ID, path);
     }
 }

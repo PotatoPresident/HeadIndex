@@ -67,7 +67,7 @@ public class PagedHeadsGui extends LayeredGui {
     private void updateNavigation() {
         navigationLayer.setSlot(
                 3, GuiElementBuilder
-                        .from(this.page != 0 ? backwardArrow() : Items.BLACK_STAINED_GLASS_PANE.getDefaultInstance())
+                        .from(this.page != 0 ? backwardArrow() : Items.STAINED_GLASS_PANE.black().getDefaultInstance())
                         .setName(Component.translatable("spectatorMenu.previous_page").setStyle(regular))
                         .setCallback((index, type, action, gui) -> {
                             this.page -= 1;
@@ -81,7 +81,7 @@ public class PagedHeadsGui extends LayeredGui {
 
         navigationLayer.setSlot(
                 5, GuiElementBuilder
-                        .from(this.page + 1 < getMaxPage() ? forwardArrow() : Items.BLACK_STAINED_GLASS_PANE.getDefaultInstance())
+                        .from(this.page + 1 < getMaxPage() ? forwardArrow() : Items.STAINED_GLASS_PANE.black().getDefaultInstance())
                         .setName(Component.translatable("spectatorMenu.next_page").setStyle(regular))
                         .setCallback((index, type, action, gui) -> {
                             this.page += 1;

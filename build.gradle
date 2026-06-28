@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version '1.15.+'
+    id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -23,9 +23,8 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    implementation include("me.lucko:fabric-permissions-api:0.7.0")
-    implementation include("eu.pb4:sgui:2.0.0+26.1")
-    implementation include("xyz.nucleoid:server-translations-api:3.0.1+26.1")
+    implementation include("eu.pb4:sgui:2.1.0+26.2")
+    implementation include("xyz.nucleoid:server-translations-api:3.1.0+26.2")
     implementation include("eu.pb4:common-economy-api:2.0.0")
 }
 
