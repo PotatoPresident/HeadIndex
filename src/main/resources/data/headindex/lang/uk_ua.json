@@ -1,0 +1,22 @@
+{
+  "text.headindex.category.alphabet": "Абетка",
+  "text.headindex.category.animals": "Тваринки",
+  "text.headindex.category.blocks": "Блоки",
+  "text.headindex.category.decoration": "Декорації",
+  "text.headindex.category.food-drinks": "Їжа та напої",
+  "text.headindex.category.humans": "Люди",
+  "text.headindex.category.humanoid": "Гуманоїди",
+  "text.headindex.category.miscellaneous": "Різне",
+  "text.headindex.category.monsters": "Монстри",
+  "text.headindex.category.plants": "Рослини",
+
+  "text.headindex.title": "Head Index",
+  "text.headindex.back": "Повернутися",
+  "text.headindex.search": "Пошук",
+  "text.headindex.search.output": "Пошук: %s",
+  "text.headindex.playername": "Ім'я гравця",
+  "text.headindex.price": "Ціна: %s",
+
+  "text.headindex.xp.points": "%s Досвіду",
+  "text.headindex.xp.levels": "%s Рівнів досвіду"
+}
