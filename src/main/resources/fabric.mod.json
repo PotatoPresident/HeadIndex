@@ -20,9 +20,12 @@
       "us.potatoboy.headindex.HeadIndex"
     ]
   },
+  "mixins": [
+    "headindex.mixins.json"
+  ],
   "depends": {
-    "fabricloader": ">=0.18.2",
-    "fabric": "*",
-    "minecraft": ">=1.21.11"
+    "fabricloader": ">=0.18.4",
+    "fabric-api": "*",
+    "minecraft": ">=26.1.1"
   }
 }

@@ -1,15 +1,4 @@
 {
-  "text.headindex.category.alphabet": "Alphabet",
-  "text.headindex.category.animals": "Animals",
-  "text.headindex.category.blocks": "Blocks",
-  "text.headindex.category.decoration": "Decoration",
-  "text.headindex.category.food-drinks": "Food & Drinks",
-  "text.headindex.category.humans": "Humans",
-  "text.headindex.category.humanoid": "Humanoid",
-  "text.headindex.category.miscellaneous": "Miscellaneous",
-  "text.headindex.category.monsters": "Monsters",
-  "text.headindex.category.plants": "Plants",
-
   "text.headindex.title": "Head Index",
   "text.headindex.back": "Back",
   "text.headindex.search": "Search",
@@ -18,5 +7,7 @@
   "text.headindex.price": "Price: %s",
 
   "text.headindex.xp.points": "%s XP",
-  "text.headindex.xp.levels": "%s XP Levels"
+  "text.headindex.xp.levels": "%s XP Levels",
+  
+  "text.headindex.config.license": "Minecraft Heads license key has not been set. Register at %s and enter in /config/head-index.json"
 }

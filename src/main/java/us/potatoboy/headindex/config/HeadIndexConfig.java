@@ -3,16 +3,16 @@ package us.potatoboy.headindex.config;
 import com.google.gson.*;
 import eu.pb4.common.economy.api.CommonEconomy;
 import eu.pb4.common.economy.api.EconomyCurrency;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class HeadIndexConfig {
 	private static final Gson GSON = new GsonBuilder()
@@ -28,49 +28,52 @@ public class HeadIndexConfig {
 		LEVEL,
 		LEVELPOINTS
 	}
+    
+    private final String _licenseComment = "Enter your license key below. Register here: https://minecraft-heads.com/wiki/minecraft-heads/api-v2-for-users";
+    public String license = "LICENSE_HERE";
 
-	// Permission level required to use the feature
+    private final String _permissionComment = "The default permission level for the commands. Set to 0 to allow all players access";
 	public int permissionLevel = 2;
 
-	// Type of economy to use
+    private final String _economyComment = "The type of economy to use. Set to FREE to disable economy, ITEM to use an item, TAG to use a tag, ECONOMY to use an economy currency, LEVEL to use minecraft levels, or LEVELPOINTS to use level points";
 	public EconomyType economyType = EconomyType.FREE;
 
-	// If using ITEM or TAG or ECONOMY, this identifies the currency/item/tag
-	public Identifier costType = Identifier.of("minecraft", "diamond");
+    private final String _costComment = "The identifier for the item, tag or currency to use for the cost, only needed if economyType is set to ITEM, TAG, or ECONOMY";
+    public Identifier costType = Identifier.fromNamespaceAndPath("minecraft", "diamond");
 
-	// Amount of the cost
+    private final String _costAmountComment = "The amount of the item, currency or level to use for the cost";
 	public int costAmount = 1;
 
 	/**
 	 * Returns a Text component describing the cost based on the economy type.
 	 */
-	public Text getCost(MinecraftServer server) {
+	public Component getCost(MinecraftServer server) {
 		switch (economyType) {
 			case TAG:
-				return Text.translatable(getCostTag().getTranslationKey())
-						.append(Text.of(" × " + costAmount));
+				return Component.translatable(getCostTag().getTranslationKey())
+						.append(Component.literal(" × " + costAmount));
 			case ITEM:
-				return Text.empty()
-						.append(getCostItem().getName())
-						.append(Text.of(" × " + costAmount));
+			return Component.empty()
+						.append(getCostItem().getDefaultInstance().getDisplayName())
+						.append(Component.literal(" × " + costAmount));
 			case ECONOMY:
 				return getCostCurrency(server)
-						.formatValueText(costAmount, false);
+						.formatValueComponent(costAmount, false);
 			case LEVEL:
 				// Cost in experience levels
-				return Text.translatable("text.headindex.xp.levels", costAmount);
+				return Component.translatable("text.headindex.xp.levels", costAmount);
 			case LEVELPOINTS:
 				// Cost in raw XP points
-				return Text.translatable("text.headindex.xp.points", costAmount);
+				return Component.translatable("text.headindex.xp.points", costAmount);
 			case FREE:
 			default:
-				return Text.empty();
+				return Component.empty();
 		}
 	}
 
 	/** Get the configured Item for ITEM cost type */
 	public Item getCostItem() {
-		return Registries.ITEM.get(costType);
+		return BuiltInRegistries.ITEM.getValue(costType);
 	}
 
 	/** Get the configured EconomyCurrency for ECONOMY cost type */
@@ -80,11 +83,16 @@ public class HeadIndexConfig {
 
 	/** Get the configured TagKey for TAG cost type */
 	public TagKey<Item> getCostTag() {
-		return TagKey.of(Registries.ITEM.getKey(), costType);
+		return TagKey.create(BuiltInRegistries.ITEM.key(), costType);
 	}
+    
+    /** Use demo mode if the license has not been set */
+    public boolean demoMode() {
+        return Objects.equals(license, "LICENSE_HERE");
+    }
 
 	/**
-	 * Loads the configuration from the given file, or creates a default if missing.
+	 * Loads the configuration from the given file or creates a default if missing.
 	 */
 	public static HeadIndexConfig loadConfig(File file) {
 		HeadIndexConfig config;
