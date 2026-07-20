@@ -1,0 +1,22 @@
+{
+  "text.headindex.category.alphabet": "アルファベット",
+  "text.headindex.category.animals": "動物",
+  "text.headindex.category.blocks": "ブロック",
+  "text.headindex.category.decoration": "装飾",
+  "text.headindex.category.food-drinks": "食べ物＆飲み物",
+  "text.headindex.category.humans": "人間",
+  "text.headindex.category.humanoid": "人型",
+  "text.headindex.category.miscellaneous": "その他",
+  "text.headindex.category.monsters": "モンスター",
+  "text.headindex.category.plants": "植物",
+
+  "text.headindex.title": "Head Index",
+  "text.headindex.back": "戻る",
+  "text.headindex.search": "検索",
+  "text.headindex.search.output": "検索: %s",
+  "text.headindex.playername": "プレイヤー名",
+  "text.headindex.price": "価格: %s"
+
+  "text.headindex.xp.points": "%s 経験値",
+  "text.headindex.xp.levels": "%s 経験値レベル"
+}
