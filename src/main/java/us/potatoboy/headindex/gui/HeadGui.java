@@ -19,8 +19,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Category;
+import us.potatoboy.headindex.api.GeyserHeadDatabaseAPI;
 import us.potatoboy.headindex.commands.HIPermissions;
 import us.potatoboy.headindex.config.HeadIndexConfig;
+
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 
 public class HeadGui extends SimpleGui {
     private final ServerPlayer player;
+    private final boolean hasFloodgate = FabricLoader.getInstance().isModLoaded("floodgate");
 
     public HeadGui(ServerPlayer player) {
         super(MenuType.GENERIC_9x2, player, false);
@@ -152,16 +156,29 @@ public class HeadGui extends SimpleGui {
                     Optional<NameAndId> possibleProfile = server.services().profileRepository().findProfileByName(this.getInput());
                     MinecraftSessionService sessionService = server.services().sessionService();
 
+                    if (possibleProfile.isEmpty() && hasFloodgate) {
+                        possibleProfile = GeyserHeadDatabaseAPI.getAuthlibProfileFromPlayerName(this.getInput());
+                    }
                     if (possibleProfile.isEmpty()) {
                         outputStack.remove(DataComponents.PROFILE);
                         return;
                     }
 
-                    ProfileResult profileResult = sessionService.fetchProfile(possibleProfile.get().id(), false);
-                    if (profileResult == null) {
+                    var authlibProfile = possibleProfile.get();
+                    ProfileResult profileResult = sessionService.fetchProfile(authlibProfile.id(), false);
+
+                    GameProfile profile = null;
+                    if (profileResult != null) {
+                        profile = profileResult.profile();
+                    }
+
+                    if (profile == null && hasFloodgate) {
+                        profile = GeyserHeadDatabaseAPI.getGameProfileByUuidName(authlibProfile.id(), authlibProfile.name());
+                    }
+
+                    if (profile == null) {
                         outputStack.remove(DataComponents.PROFILE);
                     } else {
-                        GameProfile profile = profileResult.profile();
                         outputStack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile));
                     }
 
