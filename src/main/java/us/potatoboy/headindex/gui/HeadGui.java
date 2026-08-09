@@ -19,8 +19,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.api.Category;
+import us.potatoboy.headindex.api.GeyserHeadDatabaseAPI;
 import us.potatoboy.headindex.commands.HIPermissions;
 import us.potatoboy.headindex.config.HeadIndexConfig;
+
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +32,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class HeadGui extends SimpleGui {
-    private final ServerPlayer player;
+    protected final ServerPlayer player;
+    private final boolean hasFloodgate = FabricLoader.getInstance().isModLoaded("floodgate");
 
     public HeadGui(ServerPlayer player) {
         super(MenuType.GENERIC_9x2, player, false);
@@ -51,7 +55,7 @@ public class HeadGui extends SimpleGui {
                     .setName(Component.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)))
                     .setCallback((index1, type1, action, gui) -> {
                         this.close();
-                        new SearchInputGui().open();
+                        openSearchInputGui();
                     }));
         }
 
@@ -61,9 +65,17 @@ public class HeadGui extends SimpleGui {
                     .setName(Component.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false).withColor(ChatFormatting.WHITE)))
                     .setCallback((index1, type1, action, gui) -> {
                         this.close();
-                        new PlayerInputGui().open();
+                        openPlayerInputGui();
                     }));
         }
+    }
+
+    protected void openSearchInputGui() {
+        new SearchInputJavaGui().open();
+    }
+
+    protected void openPlayerInputGui() {
+        new PlayerInputJavaGui().open();
     }
 
     private void addCategoryButton(int index, Category category) {
@@ -90,11 +102,39 @@ public class HeadGui extends SimpleGui {
         headsGui.open();
     }
 
-    private class SearchInputGui extends AnvilInputGui {
+    protected GameProfile  findPlayerGameProfile(String playerName) {
+        MinecraftServer server = player.level().getServer();
+
+        Optional<NameAndId> possibleProfile = server.services().profileRepository().findProfileByName(playerName);
+        MinecraftSessionService sessionService = server.services().sessionService();
+
+        if (possibleProfile.isEmpty() && hasFloodgate) {
+            possibleProfile = GeyserHeadDatabaseAPI.getAuthlibProfileFromPlayerName(playerName);
+        }
+        if (possibleProfile.isEmpty()) {
+            return null;
+        }
+
+        var authlibProfile = possibleProfile.get();
+        ProfileResult profileResult = sessionService.fetchProfile(authlibProfile.id(), false);
+
+        GameProfile profile = null;
+        if (profileResult != null) {
+            profile = profileResult.profile();
+        }
+
+        if (profile == null && hasFloodgate) {
+            profile = GeyserHeadDatabaseAPI.getGameProfileByUuidName(authlibProfile.id(), authlibProfile.name());
+        }
+
+        return profile;
+    }
+
+    protected class SearchInputJavaGui extends AnvilInputGui {
         private final ItemStack inputStack = Items.NAME_TAG.getDefaultInstance();
         private final ItemStack outputStack = Items.SLIME_BALL.getDefaultInstance();
 
-        public SearchInputGui() {
+        public SearchInputJavaGui() {
             super(HeadGui.this.player, false);
 
             inputStack.set(DataComponents.CUSTOM_NAME, Component.translatable("text.headindex.search").setStyle(Style.EMPTY.withItalic(false)));
@@ -121,13 +161,13 @@ public class HeadGui extends SimpleGui {
 //        }
     }
 
-    private class PlayerInputGui extends AnvilInputGui {
+    private class PlayerInputJavaGui extends AnvilInputGui {
         private final ItemStack inputStack = Items.PLAYER_HEAD.getDefaultInstance();
         private final ItemStack outputStack = Items.PLAYER_HEAD.getDefaultInstance();
 
         private long apiDebounce = 0;
 
-        public PlayerInputGui() {
+        public PlayerInputJavaGui() {
             super(HeadGui.this.player, false);
 
             inputStack.set(DataComponents.CUSTOM_NAME, Component.translatable("text.headindex.playername").setStyle(Style.EMPTY.withItalic(false)));
@@ -148,20 +188,12 @@ public class HeadGui extends SimpleGui {
 
                 CompletableFuture.runAsync(() -> {
                     MinecraftServer server = player.level().getServer();
+                    String playerName = this.getInput();
+                    var profile = findPlayerGameProfile(playerName);
 
-                    Optional<NameAndId> possibleProfile = server.services().profileRepository().findProfileByName(this.getInput());
-                    MinecraftSessionService sessionService = server.services().sessionService();
-
-                    if (possibleProfile.isEmpty()) {
-                        outputStack.remove(DataComponents.PROFILE);
-                        return;
-                    }
-
-                    ProfileResult profileResult = sessionService.fetchProfile(possibleProfile.get().id(), false);
-                    if (profileResult == null) {
+                    if (profile == null) {
                         outputStack.remove(DataComponents.PROFILE);
                     } else {
-                        GameProfile profile = profileResult.profile();
                         outputStack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile));
                     }
 
