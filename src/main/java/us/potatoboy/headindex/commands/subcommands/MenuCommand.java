@@ -8,7 +8,9 @@ import net.minecraft.commands.Commands;
 import us.potatoboy.headindex.BuildableCommand;
 import us.potatoboy.headindex.HeadIndex;
 import us.potatoboy.headindex.commands.HIPermissions;
-import us.potatoboy.headindex.gui.HeadGui;
+import us.potatoboy.headindex.gui.HeadGuiFactory;
+
+import net.fabricmc.loader.api.FabricLoader;
 
 public class MenuCommand implements BuildableCommand {
     @Override
@@ -20,7 +22,8 @@ public class MenuCommand implements BuildableCommand {
     }
 
     public static int openMenu(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        new HeadGui(context.getSource().getPlayerOrException()).open();
+        final boolean hasFloodgate = FabricLoader.getInstance().isModLoaded("floodgate");
+        HeadGuiFactory.makeHeadGui(context.getSource().getPlayerOrException()).open();
         
         if (HeadIndex.config.demoMode()) {
             context.getSource().sendSystemMessage(HeadIndex.licenseWarn());

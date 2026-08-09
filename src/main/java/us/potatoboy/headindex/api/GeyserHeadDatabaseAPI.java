@@ -15,9 +15,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.google.common.collect.ImmutableMultimap;
+import net.minecraft.server.level.ServerPlayer;
 
 public class GeyserHeadDatabaseAPI {
     private static final String GEYSER_GLOBAL_API_SKIN = "https://api.geysermc.org/v2/skin";
+
+    public static boolean isActiveBedrockPlayer(ServerPlayer player) {
+        return FloodgateApi.getInstance().isFloodgatePlayer(player.getUUID());
+    }
 
     public static long getXuidFromUuid(UUID uuid) {
         return uuid.getLeastSignificantBits();
