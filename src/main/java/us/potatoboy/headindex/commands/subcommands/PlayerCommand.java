@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import us.potatoboy.headindex.BuildableCommand;
@@ -37,7 +38,7 @@ public class PlayerCommand implements BuildableCommand {
 
         var stack = Items.PLAYER_HEAD.getDefaultInstance();
         stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(result.profile()));
-        context.getSource().getPlayerOrException().getInventory().placeItemBackInInventory(stack);
+        context.getSource().getPlayerOrException().getInventory().placeItemBackInInventory(stack, Prediction.SERVER_ONLY);
         return 1;
     }
 }

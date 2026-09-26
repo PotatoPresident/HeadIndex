@@ -1,9 +1,9 @@
 package us.potatoboy.headindex.gui;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.ProfileResult;
-import com.mojang.authlib.yggdrasil.response.NameAndId;
+import com.mojang.authlib.minecraft.SessionService;
+import com.mojang.authlib.services.ProfileResult;
+import com.mojang.authlib.services.response.NameAndId;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.AnvilInputGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -150,7 +151,7 @@ public class HeadGui extends SimpleGui {
                     MinecraftServer server = player.level().getServer();
 
                     Optional<NameAndId> possibleProfile = server.services().profileRepository().findProfileByName(this.getInput());
-                    MinecraftSessionService sessionService = server.services().sessionService();
+                    SessionService sessionService = server.services().sessionService();
 
                     if (possibleProfile.isEmpty()) {
                         outputStack.remove(DataComponents.PROFILE);
@@ -179,7 +180,7 @@ public class HeadGui extends SimpleGui {
                                 } else if (ItemStack.isSameItem(outputStack, cursorStack) && cursorStack.getCount() < cursorStack.getMaxStackSize()) {
                                     cursorStack.grow(1);
                                 } else {
-                                    player.drop(outputStack.copy(), false);
+                                    player.drop(outputStack.copy(), false, Prediction.SERVER_ONLY);
                                 }
                             })
                     );

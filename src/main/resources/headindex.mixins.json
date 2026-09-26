@@ -4,7 +4,7 @@
   "package": "us.potatoboy.headindex.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "YggdrasilGameProfileRepositoryMixin"
+    "MinecraftServicesProfileRepositoryMixin"
   ],
   "client": [
   ],
